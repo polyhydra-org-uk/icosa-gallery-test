@@ -167,6 +167,8 @@ django/*.jsonl
 django/gltf2.json
 uploads.sh
 
+# Pip source packages
+django/src/
 
 django/static
 django/media
