@@ -226,12 +226,11 @@ class Oauth2ClientFactory(DjangoModelFactory):
     class Meta:
         model = Oauth2Client
 
-    name = Faker('company')
     client_id = Faker('uuid4')
     client_secret = Faker('sha256')
-    redirect_uri = Faker('url')
-    user = SubFactory(UserFactory)
-    create_time = LazyAttribute(lambda _: timezone.now())
+    client_id_issued_at = LazyAttribute(lambda _: int(timezone.now().timestamp()))
+    client_secret_expires_at = 0
+    client_metadata = None
 
 
 class Oauth2CodeFactory(DjangoModelFactory):
@@ -240,12 +239,16 @@ class Oauth2CodeFactory(DjangoModelFactory):
     class Meta:
         model = Oauth2Code
 
+    user_id = LazyAttribute(lambda obj: UserFactory().id)
     code = Faker('sha256')
-    client = SubFactory(Oauth2ClientFactory)
-    user = SubFactory(UserFactory)
+    client_id = Faker('uuid4')
     redirect_uri = Faker('url')
-    expires_at = LazyAttribute(lambda _: timezone.now() + timezone.timedelta(minutes=10))
-    create_time = LazyAttribute(lambda _: timezone.now())
+    response_type = 'code'
+    auth_time = LazyAttribute(lambda _: int(timezone.now().timestamp()))
+    code_challenge = None
+    code_challenge_method = None
+    scope = 'read write'
+    nonce = None
 
 
 class Oauth2TokenFactory(DjangoModelFactory):
@@ -254,12 +257,16 @@ class Oauth2TokenFactory(DjangoModelFactory):
     class Meta:
         model = Oauth2Token
 
+    user_id = LazyAttribute(lambda obj: UserFactory().id)
+    client_id = Faker('uuid4')
+    token_type = 'Bearer'
     access_token = Faker('sha256')
     refresh_token = Faker('sha256')
-    client = SubFactory(Oauth2ClientFactory)
-    user = SubFactory(UserFactory)
-    expires_at = LazyAttribute(lambda _: timezone.now() + timezone.timedelta(hours=1))
-    create_time = LazyAttribute(lambda _: timezone.now())
+    scope = 'read write'
+    issued_at = LazyAttribute(lambda _: int(timezone.now().timestamp()))
+    access_token_revoked_at = 0
+    refresh_token_revoked_at = 0
+    expires_in = 3600
 
 
 # Helper functions for creating complex test data
