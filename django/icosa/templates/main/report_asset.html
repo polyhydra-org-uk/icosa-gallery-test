@@ -4,6 +4,7 @@
 {% load honeypot %}
 {% load fontawesome_tags %}
 {% load static %}
+{% load i18n %}
 
 
 {% block content %}
@@ -12,10 +13,10 @@
         <div class="col">
             <div>
                 <h2>
-                    Report &ldquo;{{ asset.name }}&rdquo; by {{ asset.owner.displayname }}
+                    {% blocktrans with name=asset.name owner=asset.owner.displayname %}Report &ldquo;{{ name }}&rdquo; by {{ owner }}{% endblocktrans %}
                 </h2>
-                <p>Use the form below to tell us why you are reporting this work.</p>
-                <p>Note that we cannot guarantee we will personally respond to reports.</p>
+                <p>{% trans "Use the form below to tell us why you are reporting this work." %}</p>
+                <p>{% trans "Note that we cannot guarantee we will personally respond to reports." %}</p>
                 <form method="post">
                     {% csrf_token %}
                     {% render_honeypot_field %}
@@ -32,7 +33,7 @@
                         {{ form.contact_email.label_tag }}
                         {{ form.contact_email }}
                     {% endif %}
-                    <button type="submit" class="btn btn-primary">Report</button>
+                    <button type="submit" class="btn btn-primary">{% trans "Report" %}</button>
                 </form>
             </div>
         </div>

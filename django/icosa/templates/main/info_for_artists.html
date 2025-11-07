@@ -1,44 +1,45 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% block content %}
     <div class="container text-page">
         <div class="row">
             <div class="col-lg-6 offset-lg-3">
 <h2>{{ page_title }}</h2>
 
-<p>We showcase Creative Commons and public domain works, and fully respect artist rights. If you want your work removed, just ask and we'll do it. We’re here to share, not claim.</p>
+<p>{% trans "We showcase Creative Commons and public domain works, and fully respect artist rights. If you want your work removed, just ask and we'll do it. We're here to share, not claim." %}</p>
 
-<p>We want to be very clear: the Icosa Foundation and Icosa Gallery do not claim ownership over any work displayed in our gallery. All works remain the intellectual property of their original creators. We are simply a platform that helps showcase Creative Commons-licensed and public domain works in a unified, accessible way. Our mission is to amplify the creative work of others, not to claim it as our own.</p>
+<p>{% trans "We want to be very clear: the Icosa Foundation and Icosa Gallery do not claim ownership over any work displayed in our gallery. All works remain the intellectual property of their original creators. We are simply a platform that helps showcase Creative Commons-licensed and public domain works in a unified, accessible way. Our mission is to amplify the creative work of others, not to claim it as our own." %}</p>
 
-<h3>Why does my work appear on this site?</h3>
+<h3>{% trans "Why does my work appear on this site?" %}</h3>
 
-<p>If you uploaded your work to Google Poly, there is a good chance it appears on this website as well as other websites that saved content from when Google announced it was shutting down Poly. Usually websites such as ours rely on data that was downloaded by a team of volunteers and uploaded to the Internet Archive.</p>
+<p>{% trans "If you uploaded your work to Google Poly, there is a good chance it appears on this website as well as other websites that saved content from when Google announced it was shutting down Poly. Usually websites such as ours rely on data that was downloaded by a team of volunteers and uploaded to the Internet Archive." %}</p>
 
-<h3>My work is on this site. How do I take control of it?</h3>
+<h3>{% trans "My work is on this site. How do I take control of it?" %}</h3>
 
-<p>If you already have an account with us, please sign in and click the button below. We will associate the work with your account after some manual sanity checks.</p>
+<p>{% trans "If you already have an account with us, please sign in and click the button below. We will associate the work with your account after some manual sanity checks." %}</p>
 
-<p><button class="btn btn-primary btn-enquiry" data-bs-toggle="modal" data-bs-target="#enquiry-modal" data-enquiry-subject="EXISTING_ACCOUNT">I want to tie my work to my existing account</button></p>
-If you do not already have an account you can claim this work and sign up at the same time. You can change your account name at any time after signing up.
+<p><button class="btn btn-primary btn-enquiry" data-bs-toggle="modal" data-bs-target="#enquiry-modal" data-enquiry-subject="EXISTING_ACCOUNT">{% trans "I want to tie my work to my existing account" %}</button></p>
+{% trans "If you do not already have an account you can claim this work and sign up at the same time. You can change your account name at any time after signing up." %}
 
-<p><button class="btn btn-primary btn-enquiry" data-bs-toggle="modal" data-bs-target="#enquiry-modal" data-enquiry-subject="NEW_ACCOUNT">I want to create an account based on my work</button></p>
+<p><button class="btn btn-primary btn-enquiry" data-bs-toggle="modal" data-bs-target="#enquiry-modal" data-enquiry-subject="NEW_ACCOUNT">{% trans "I want to create an account based on my work" %}</button></p>
 
-<h3>Can I remove my work?</h3>
+<h3>{% trans "Can I remove my work?" %}</h3>
 
-<p>Yes, absolutely. We will honor any request from artists and creators who would prefer that their work didn’t appear here (although we will have to take some steps to verify ownership to prevent abuse and trolling).</p>
+<p>{% trans "Yes, absolutely. We will honor any request from artists and creators who would prefer that their work didn't appear here (although we will have to take some steps to verify ownership to prevent abuse and trolling)." %}</p>
 
-<p>We can only remove content from our own website. The Internet Archive will retain their copy and there are likely to be other websites that also have content from the same sources. You can contact those organizations individually and in most cases they will be happy to accommodate your wishes.</p>
+<p>{% trans "We can only remove content from our own website. The Internet Archive will retain their copy and there are likely to be other websites that also have content from the same sources. You can contact those organizations individually and in most cases they will be happy to accommodate your wishes." %}</p>
 
-<p>If you are the creator and you no longer want your work displayed, get in touch via the buttons below and we’ll respond as quickly as possible.</p>
-<p><button class="btn btn-primary btn-enquiry" data-bs-toggle="modal" data-bs-target="#enquiry-modal" data-enquiry-subject="WORK_REMOVED">I want my work removed from this website</button></p>
+<p>{% trans "If you are the creator and you no longer want your work displayed, get in touch via the buttons below and we'll respond as quickly as possible." %}</p>
+<p><button class="btn btn-primary btn-enquiry" data-bs-toggle="modal" data-bs-target="#enquiry-modal" data-enquiry-subject="WORK_REMOVED">{% trans "I want my work removed from this website" %}</button></p>
 
-<h3>Someone else has already claimed my work. What can I do?</h3>
+<h3>{% trans "Someone else has already claimed my work. What can I do?" %}</h3>
 
-<p>If you find your work under somebody else’s name then click the button below. We’ll investigate. Please don’t use this link if you’ve forgotten your password. Instead, <a href="{% url 'icosa:password_reset' %}">reset your password</a>.</p>
+<p>{% blocktrans %}If you find your work under somebody else's name then click the button below. We'll investigate. Please don't use this link if you've forgotten your password. Instead, <a href="{% url 'icosa:password_reset' %}">reset your password</a>.{% endblocktrans %}</p>
 
-<p><button class="btn btn-primary btn-enquiry" data-bs-toggle="modal" data-bs-target="#enquiry-modal" data-enquiry-subject="CREDITED_TO_SOMEONE_ELSE">My work is credited to someone else</button></p>
+<p><button class="btn btn-primary btn-enquiry" data-bs-toggle="modal" data-bs-target="#enquiry-modal" data-enquiry-subject="CREDITED_TO_SOMEONE_ELSE">{% trans "My work is credited to someone else" %}</button></p>
 
-<h3>What types of licenses are available?</h3>
-<p>Find out <a href="{% url 'icosa:licenses' %}">more information on what kind of licenses Icosa Gallery offers</a>.</p>
+<h3>{% trans "What types of licenses are available?" %}</h3>
+<p>{% blocktrans %}Find out <a href="{% url 'icosa:licenses' %}">more information on what kind of licenses Icosa Gallery offers</a>.{% endblocktrans %}</p>
 
             </div>
         </div>

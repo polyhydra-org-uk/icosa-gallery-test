@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% load paginator_tags %}
+{% load i18n %}
 
 {% block extrahead %}
     {{ block.super }}
@@ -25,7 +26,7 @@
     </div>
     <div class="row">
         <div class="col-lg-6">
-            <h1>Upload New File</h1>
+            <h1>{% trans "Upload New File" %}</h1>
         </div>
     </div>
     <div class="row">
@@ -36,13 +37,13 @@
                     {{ form.file.errors }}
                 {% endif %}
                 <input multiple type="file" class="form-control-file" name="file" required>
-                <button type="submit" class="btn btn-primary">Upload</button>
+                <button type="submit" class="btn btn-primary">{% trans "Upload" %}</button>
             </form>
         </div>
         <div class="col-lg-6">
                 <details>
                     <summary>
-                        Note: We support the following formats:
+                        {% trans "Note: We support the following formats:" %}
                     </summary>
                     <div class="details-content">
                         <ul>
@@ -64,16 +65,11 @@
                     </div>
                 </details>
             <p>
-                Currently you can upload a zip file containing all relevant files.
-                <br>
-                (For example, if uploading <code>sketch.gltf</code>, make sure <code>sketch.bin</code> is
-                also included in the zip file.)
-                <br>
-                <strong>or</strong> you can upload a glb file.
+                {% blocktrans %}Currently you can upload a zip file containing all relevant files.<br>(For example, if uploading <code>sketch.gltf</code>, make sure <code>sketch.bin</code> is also included in the zip file.)<br><strong>or</strong> you can upload a glb file.{% endblocktrans %}
             </p>
-            <p>Include an image file named <code>thumbnail.png</code> in the root of your zip file to use this as your asset's thumbnail for display on this site. If uploading a glb or zip without a thumbnail, you can upload one later by editing your work's settings.</p>
+            <p>{% blocktrans %}Include an image file named <code>thumbnail.png</code> in the root of your zip file to use this as your asset's thumbnail for display on this site. If uploading a glb or zip without a thumbnail, you can upload one later by editing your work's settings.{% endblocktrans %}</p>
             {% if config.BETA_MODE %}
-                <p><strong>This site is currently in Beta mode. While we will do our best to keep things stable, your data may be removed at any time. Please bear this in mind when uploading your work.</strong></p>
+                <p><strong>{% trans "This site is currently in Beta mode. While we will do our best to keep things stable, your data may be removed at any time. Please bear this in mind when uploading your work." %}</strong></p>
             {% endif %}
         </div>
     </div>
@@ -81,7 +77,7 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            <h2>Manage Uploads</h2>
+            <h2>{% trans "Manage Uploads" %}</h2>
         </div>
     </div>
     <div class="sketch-list">
@@ -90,7 +86,7 @@
                 {% include "partials/sketch_list_item_owner.html" %}
             {% endfor %}
         {% else %}
-            <p>You haven't uploaded anything yet.</p>
+            <p>{% trans "You haven't uploaded anything yet." %}</p>
         {% endif %}
     </div>
     {% if assets %}

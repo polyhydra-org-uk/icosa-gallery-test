@@ -10,6 +10,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
+from django.utils.translation import gettext_lazy as _
 from icosa.helpers.snowflake import get_snowflake_timestamp
 from icosa.helpers.storage import get_b2_bucket
 
@@ -45,76 +46,143 @@ NON_REMIXABLE_FORMAT_TYPES = ["TILT", "BLOCKS"]
 class Asset(models.Model):
     COLOR_SPACES = [("LINEAR", "LINEAR"), ("GAMMA", "GAMMA")]
     id = models.BigAutoField(primary_key=True)
-    url = models.CharField(max_length=255, blank=True, null=True, unique=True)
-    name = models.CharField(max_length=255, blank=True, null=True)
-    owner = models.ForeignKey("AssetOwner", null=True, blank=True, on_delete=models.CASCADE)
-    description = models.TextField(blank=True, null=True)
-    formats = models.JSONField(null=True, blank=True)
-    visibility = models.CharField(max_length=255, default=PRIVATE, choices=ASSET_VISIBILITY_CHOICES, db_default=PRIVATE)
-    curated = models.BooleanField(default=False)
-    last_reported_by = models.ForeignKey(
-        "User", null=True, blank=True, on_delete=models.SET_NULL, related_name="reported_assets"
+    url = models.CharField(
+        _("URL"),
+        max_length=255,
+        blank=True,
+        null=True,
+        unique=True,
+        help_text=_("Unique URL identifier for this asset"),
     )
-    last_reported_time = models.DateTimeField(null=True, blank=True)
-    polyid = models.CharField(max_length=255, blank=True, null=True)
-    polydata = models.JSONField(blank=True, null=True)
+    name = models.CharField(_("Name"), max_length=255, blank=True, null=True)
+    owner = models.ForeignKey(
+        "AssetOwner",
+        verbose_name=_("Owner"),
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        help_text=_("Creator or owner of this asset"),
+    )
+    description = models.TextField(_("Description"), blank=True, null=True, help_text=_("Detailed description of the asset"))
+    formats = models.JSONField(verbose_name=_("Formats"), null=True, blank=True, help_text=_("Available file formats"))
+    visibility = models.CharField(
+        _("Visibility"),
+        max_length=255,
+        default=PRIVATE,
+        choices=ASSET_VISIBILITY_CHOICES,
+        db_default=PRIVATE,
+        help_text=_("Who can view this asset"),
+    )
+    curated = models.BooleanField(_("Curated"), default=False, help_text=_("Whether this asset has been curated by administrators"))
+    last_reported_by = models.ForeignKey(
+        "User",
+        verbose_name=_("Last Reported By"),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="reported_assets",
+        help_text=_("Last user who reported this asset"),
+    )
+    last_reported_time = models.DateTimeField(_("Last Reported Time"), null=True, blank=True)
+    polyid = models.CharField(_("Poly ID"), max_length=255, blank=True, null=True, help_text=_("Original Google Poly ID"))
+    polydata = models.JSONField(verbose_name=_("Poly Data"), blank=True, null=True, help_text=_("Original Google Poly metadata"))
     thumbnail = models.ImageField(
+        _("Thumbnail"),
         max_length=FILENAME_MAX_LENGTH,
         blank=True,
         null=True,
         upload_to=thumbnail_upload_path,
         validators=[FileExtensionValidator(allowed_extensions=VALID_THUMBNAIL_EXTENSIONS)],
+        help_text=_("Thumbnail image for this asset"),
     )
     preview_image = models.ImageField(
+        _("Preview Image"),
         max_length=FILENAME_MAX_LENGTH,
         blank=True,
         null=True,
         upload_to=preview_image_upload_path,
         validators=[FileExtensionValidator(allowed_extensions=VALID_THUMBNAIL_EXTENSIONS)],
+        help_text=_("Preview image for this asset"),
     )
-    thumbnail_contenttype = models.CharField(max_length=255, blank=True, null=True)
-    create_time = models.DateTimeField()
-    update_time = models.DateTimeField(null=True, blank=True)
-    license = models.CharField(max_length=50, null=True, blank=True, choices=LICENSE_CHOICES)
-    tags = models.ManyToManyField("Tag", blank=True)
-    category = models.CharField(max_length=255, null=True, blank=True, choices=CATEGORY_CHOICES)
-    transform = models.JSONField(blank=True, null=True)
-    camera = models.JSONField(blank=True, null=True)
-    presentation_params = models.JSONField(null=True, blank=True)
-    imported_from = models.CharField(max_length=255, null=True, blank=True)
-    remix_ids = models.JSONField(null=True, blank=True)
-    historical_likes = models.PositiveIntegerField(default=0)
-    historical_views = models.PositiveIntegerField(default=0)
-    likes = models.PositiveIntegerField(default=0)
-    views = models.PositiveIntegerField(default=0)
-    downloads = models.PositiveIntegerField(default=0)
-    state = models.CharField(max_length=255, choices=ASSET_STATE_CHOICES, default="BARE", db_default="BARE")
+    thumbnail_contenttype = models.CharField(_("Thumbnail Content Type"), max_length=255, blank=True, null=True)
+    create_time = models.DateTimeField(_("Created"))
+    update_time = models.DateTimeField(_("Last Updated"), null=True, blank=True)
+    license = models.CharField(
+        _("License"),
+        max_length=50,
+        null=True,
+        blank=True,
+        choices=LICENSE_CHOICES,
+        help_text=_("License under which this asset is shared"),
+    )
+    tags = models.ManyToManyField("Tag", verbose_name=_("Tags"), blank=True, help_text=_("Tags for categorizing this asset"))
+    category = models.CharField(_("Category"), max_length=255, null=True, blank=True, choices=CATEGORY_CHOICES)
+    transform = models.JSONField(verbose_name=_("Transform"), blank=True, null=True, help_text=_("3D transformation data"))
+    camera = models.JSONField(verbose_name=_("Camera"), blank=True, null=True, help_text=_("Camera settings"))
+    presentation_params = models.JSONField(
+        verbose_name=_("Presentation Parameters"),
+        null=True,
+        blank=True,
+        help_text=_("Parameters for how the asset should be displayed"),
+    )
+    imported_from = models.CharField(
+        _("Imported From"),
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text=_("Source from which this asset was imported"),
+    )
+    remix_ids = models.JSONField(
+        verbose_name=_("Remix IDs"),
+        null=True,
+        blank=True,
+        help_text=_("IDs of assets this is remixed from"),
+    )
+    historical_likes = models.PositiveIntegerField(_("Historical Likes"), default=0, help_text=_("Number of likes from previous system"))
+    historical_views = models.PositiveIntegerField(_("Historical Views"), default=0, help_text=_("Number of views from previous system"))
+    likes = models.PositiveIntegerField(_("Likes"), default=0, help_text=_("Number of likes"))
+    views = models.PositiveIntegerField(_("Views"), default=0, help_text=_("Number of views"))
+    downloads = models.PositiveIntegerField(_("Downloads"), default=0, help_text=_("Number of downloads"))
+    state = models.CharField(
+        _("State"),
+        max_length=255,
+        choices=ASSET_STATE_CHOICES,
+        default="BARE",
+        db_default="BARE",
+        help_text=_("Current processing state of the asset"),
+    )
     preferred_viewer_format_override = models.OneToOneField(
         "Format",
+        verbose_name=_("Preferred Viewer Format Override"),
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
         related_name="preferred_format_override_for",
+        help_text=_("Manually set preferred format for the 3D viewer"),
         # limit_choices_to cannot have a reference to self. We must limit the
         # choices another way.
     )
 
     # Denorm fields
-    triangle_count = models.PositiveIntegerField(default=0)
-    search_text = models.TextField(null=True, blank=True)
-    is_viewer_compatible = models.BooleanField(default=False)
-    last_liked_time = models.DateTimeField(null=True, blank=True)
+    triangle_count = models.PositiveIntegerField(_("Triangle Count"), default=0, help_text=_("Number of triangles in the 3D model"))
+    search_text = models.TextField(_("Search Text"), null=True, blank=True, help_text=_("Denormalized text for searching"))
+    is_viewer_compatible = models.BooleanField(
+        _("Viewer Compatible"),
+        default=False,
+        help_text=_("Whether this asset can be viewed in the 3D viewer"),
+    )
+    last_liked_time = models.DateTimeField(_("Last Liked Time"), null=True, blank=True, help_text=_("Time when this asset was last liked"))
 
-    has_tilt = models.BooleanField(default=False)
-    has_blocks = models.BooleanField(default=False)
-    has_gltf1 = models.BooleanField(default=False)
-    has_gltf2 = models.BooleanField(default=False)
-    has_gltf_any = models.BooleanField(default=False)
-    has_fbx = models.BooleanField(default=False)
-    has_obj = models.BooleanField(default=False)
-    has_vox = models.BooleanField(default=False)
+    has_tilt = models.BooleanField(_("Has Tilt Brush Format"), default=False)
+    has_blocks = models.BooleanField(_("Has Blocks Format"), default=False)
+    has_gltf1 = models.BooleanField(_("Has GLTF 1 Format"), default=False)
+    has_gltf2 = models.BooleanField(_("Has GLTF 2 Format"), default=False)
+    has_gltf_any = models.BooleanField(_("Has GLTF Format"), default=False)
+    has_fbx = models.BooleanField(_("Has FBX Format"), default=False)
+    has_obj = models.BooleanField(_("Has OBJ Format"), default=False)
+    has_vox = models.BooleanField(_("Has VOX Format"), default=False)
 
-    rank = models.FloatField(default=0)
+    rank = models.FloatField(_("Rank"), default=0, help_text=_("Calculated ranking score for sorting"))
 
     @property
     def is_published(self):
@@ -287,7 +355,7 @@ class Asset(models.Model):
         return mark_safe("".join(icons))
 
     def __str__(self):
-        return self.name if self.name else "(Un-named asset)"
+        return self.name if self.name else str(_("(Unnamed asset)"))
 
     def is_owned_by_django_user(self, user=None):
         return user is not None and not user.is_anonymous and self.owner in user.assetowner_set.all()
@@ -482,6 +550,8 @@ class Asset(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
+        verbose_name = _("Asset")
+        verbose_name_plural = _("Assets")
         indexes = [
             models.Index(fields=["is_viewer_compatible", "visibility"]),
             models.Index(

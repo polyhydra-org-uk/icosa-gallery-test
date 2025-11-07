@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load paginator_tags %}
+{% load i18n %}
 
 {% block extrahead %}
     {{ block.super }}
@@ -9,7 +10,7 @@
 {% block content %}
 <div>
     <div class="container">
-        <h1>Collections by {{ user.displayname }}</h1>
+        <h1>{% blocktrans with name=user.displayname %}Collections by {{ name }}{% endblocktrans %}</h1>
         <div class="sketch-list">
             {% if collections %}
                 {% for collection in collections %}
@@ -18,7 +19,7 @@
                     {% endwith %}
                 {% endfor %}
             {% else %}
-                <p>{{ user.displayname }} hasn't created anything yet.</p>
+                <p>{% blocktrans with name=user.displayname %}{{ name }} hasn't created anything yet.{% endblocktrans %}</p>
             {% endif %}
         </div>
         {% include "partials/pagination.html" %}

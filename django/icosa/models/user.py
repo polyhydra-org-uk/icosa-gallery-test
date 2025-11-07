@@ -12,8 +12,12 @@ from django.utils.translation import gettext_lazy as _
 
 
 class User(AbstractUser):
-    displayname = models.CharField(_("Display Name"), max_length=255)
+    displayname = models.CharField(_("Display Name"), max_length=255, help_text=_("Public display name"))
     email = models.EmailField(_("email address"), blank=True, unique=True)
+
+    class Meta:
+        verbose_name = _("User")
+        verbose_name_plural = _("Users")
 
     def get_absolute_url(self):
         owners = self.assetowner_set.all()

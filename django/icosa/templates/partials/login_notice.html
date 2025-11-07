@@ -1,15 +1,16 @@
-<p><strong>Note:</strong>
+{% load i18n %}
+<p><strong>{% trans "Note:" %}</strong>
 {% if not config.LOGIN_OPEN and not config.SIGNUP_OPEN %}
-    Login and account registration
+    {% trans "Login and account registration" %}
 {% else %}
     {% if not config.LOGIN_OPEN %}
-        Login
+        {% trans "Login" %}
     {% elif not config.SIGNUP_OPEN %}
-        Account registration
+        {% trans "Account registration" %}
     {% endif %}
 {% endif %}
-is currently restricted to invited users only while we iron a few things out.</p>
-<p>If you already hold an account with Icosa Gallery, don't worry, you'll be able to log in once we open back up to everyone.</p>
+{% trans "is currently restricted to invited users only while we iron a few things out." %}</p>
+<p>{% trans "If you already hold an account with Icosa Gallery, don't worry, you'll be able to log in once we open back up to everyone." %}</p>
 {% if config.WAITLIST_IF_SIGNUP_CLOSED %}
-    <p><a href="{% url 'icosa:waitlist' %}">Sign up to the waitlist</a> to be notified when you can create an account.</p>
+    <p>{% blocktrans %}<a href="{% url 'icosa:waitlist' %}">Sign up to the waitlist</a> to be notified when you can create an account.{% endblocktrans %}</p>
 {% endif %}

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load paginator_tags %}
+{% load i18n %}
 
 {% block extrahead %}
     {{ block.super }}
@@ -13,7 +14,7 @@
     {% endif %}
     <div class="container">
         {% if heading %}
-            <h1>{% if is_explore_heading %}Exploring {% endif %}{% if heading_link %}<a href="{{ heading_link }}">{% endif %}{{ heading }}{% if heading_link %}</a>{% endif %}</h1>
+            <h1>{% if is_explore_heading %}{% trans "Exploring" %} {% endif %}{% if heading_link %}<a href="{{ heading_link }}">{% endif %}{{ heading }}{% if heading_link %}</a>{% endif %}</h1>
         {% endif %}
         <div class="sketch-list">
             {% for asset in assets %}

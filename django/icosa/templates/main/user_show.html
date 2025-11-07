@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load fontawesome_tags %}
 {% load paginator_tags %}
+{% load i18n %}
 
 {% block extrahead %}
     {{ block.super }}
@@ -46,7 +47,7 @@
                     {% endwith %}
                 {% endfor %}
             {% else %}
-                <p>{{ owner.displayname }} hasn't created anything yet.</p>
+                <p>{% blocktrans with name=owner.displayname %}{{ name }} hasn't created anything yet.{% endblocktrans %}</p>
             {% endif %}
         </div>
         {% include "partials/pagination.html" %}

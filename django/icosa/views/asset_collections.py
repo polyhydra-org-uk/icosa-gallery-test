@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.http import HttpResponseBadRequest, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, render
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import never_cache
 from icosa.models import (
     PUBLIC,
@@ -51,7 +52,7 @@ def user_asset_collection_list(request, user_url: str):
         try:
             asset = Asset.objects.get(url=post_data.get("asset_url"))
         except (Asset.DoesNotExist, Asset.MultipleObjectsReturned):
-            return HttpResponseBadRequest("no valid asset")
+            return HttpResponseBadRequest(_("no valid asset"))
 
         action = None
         collection_url = None
@@ -67,14 +68,14 @@ def user_asset_collection_list(request, user_url: str):
                 break
 
         if action is None:
-            return HttpResponseBadRequest("no action")
+            return HttpResponseBadRequest(_("no action"))
         if action in [COLLECTION_ADD, COLLECTION_REMOVE] and collection_url is None:
-            return HttpResponseBadRequest(f"action: {action}, collection: {collection_url}")
+            return HttpResponseBadRequest(_("action: %(action)s, collection: %(collection_url)s") % {"action": action, "collection_url": collection_url})
         if action in [COLLECTION_ADD, COLLECTION_REMOVE]:
             try:
                 collection = AssetCollection.objects.get(url=collection_url, user=request.user)
             except (AssetCollection.DoesNotExist, AssetCollection.MultipleObjectsReturned):
-                return HttpResponseBadRequest("no collection")
+                return HttpResponseBadRequest(_("no collection"))
 
         if action == COLLECTION_ADD:
             collection.assets.add(asset)
@@ -83,7 +84,7 @@ def user_asset_collection_list(request, user_url: str):
         elif action == COLLECTION_NEW:
             name = post_data.get("new-collection-name")
             if name is None:
-                return HttpResponseBadRequest("name is none")
+                return HttpResponseBadRequest(_("name is none"))
             collection_data = {
                 "user": user,
                 "name": name,

@@ -3,6 +3,7 @@
 {% load asset_tags %}
 {% load fontawesome_tags %}
 {% load static %}
+{% load i18n %}
 
 {% block extrahead %}
     <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ asset.get_absolute_url }}" />
@@ -43,11 +44,11 @@
                     <div id="icosa-viewer"></div>
                 </div>
             {% else %}
-                <p>Sorry, we are unable to display this model in the viewer.</p>
+                <p>{% trans "Sorry, we are unable to display this model in the viewer." %}</p>
             {% endif %}
             <div class="sketch-info-details">
                 <h2>
-                    {{ asset.name }}{% if user_owns_asset %}{% if asset.visibility == "PRIVATE" %} <span class="pill pill--danger">private</span>{% endif %}{% if asset.visibility == "UNLISTED" %} <span class="pill pill--warning">unlisted</span>{% endif %}{% endif %}
+                    {{ asset.name }}{% if user_owns_asset %}{% if asset.visibility == "PRIVATE" %} <span class="pill pill--danger">{% trans "private" %}</span>{% endif %}{% if asset.visibility == "UNLISTED" %} <span class="pill pill--warning">{% trans "unlisted" %}</span>{% endif %}{% endif %}
                     {% like_button request asset %}
                 </h2>
                 {% if asset.owner %}
@@ -64,40 +65,40 @@
                 <p></p>
                 {% if user_owns_asset or request.user.is_superuser %}
                     <a class="btn btn-primary btn-sm" href="{% url 'icosa:asset_edit' asset_url=asset.url %}">
-                        {% fa_icon "solid" "gear" %} Edit settings{% if request.user.is_superuser and not user_owns_asset %} as a superuser{% endif %}
+                        {% fa_icon "solid" "gear" %} {% trans "Edit settings" %}{% if request.user.is_superuser and not user_owns_asset %} {% trans "as a superuser" %}{% endif %}
                     </a>
                 {% endif %}
                 {% if request.user.is_superuser %}
                     <a class="btn btn-primary btn-sm" href="{% url 'icosa:asset_admin_change' asset_url=asset.url %}">
-                        {% fa_icon "solid" "gear" %} Edit in admin as a superuser
+                        {% fa_icon "solid" "gear" %} {% trans "Edit in admin as a superuser" %}
                     </a>
                 {% endif %}
                 <p>
                     {% if request.user.is_authenticated %}
                     {% if request.user.is_superuser %}
                     <a id="collection-btn" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#collections-modal">
-                        {% fa_icon "solid" "plus" %} Add to collection
+                        {% fa_icon "solid" "plus" %} {% trans "Add to collection" %}
                     </a>
                     {% endif %}
                     {% endif %}
                     {% if downloadable_formats %}
                         <a href="{% url 'icosa:asset_downloads' asset_url=asset.url %}" class="btn btn-primary btn-sm">
-                            {% fa_icon "solid" "download" %} Downloads
+                            {% fa_icon "solid" "download" %} {% trans "Downloads" %}
                         </a>
                     {% endif %}
                     <a id="embed-btn" href="javascript:void(0);" class="btn btn-primary btn-sm">
-                        {% fa_icon "solid" "code" %} Get embed code
+                        {% fa_icon "solid" "code" %} {% trans "Get embed code" %}
                     </a>
                 </p>
                 <div id="embed-wrapper" class="hidden">
-                    <p>Copy and paste the below code into your site to embed this work. Or use <a href="https://oembed.com/">oEmbed</a>.</p>
+                    <p>{% blocktrans %}Copy and paste the below code into your site to embed this work. Or use <a href="https://oembed.com/">oEmbed</a>.{% endblocktrans %}</p>
                     <textarea rows="6" class="embed-code">{{ embed_code }}</textarea>
                 </div>
                 <p class="text-right actions">
                     <small>
-                        <a href="{% url 'icosa:artist_info' %}">{% fa_icon "solid" "circle-question" %} Why is my work here? What can I do?</a>
+                        <a href="{% url 'icosa:artist_info' %}">{% fa_icon "solid" "circle-question" %} {% trans "Why is my work here? What can I do?" %}</a>
                         <a href="{% url "icosa:report_asset" asset_url=asset.url %}">
-                            {% fa_icon "solid" "flag" %} Report
+                            {% fa_icon "solid" "flag" %} {% trans "Report" %}
                         </a>
                     </small>
                 </p>

@@ -6,6 +6,7 @@ from django.contrib.auth.admin import UserAdmin as OriginalUserAdmin
 from django.db.models import Count
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 from icosa.models import (
     Asset,
     AssetCollection,
@@ -172,7 +173,7 @@ class AssetAdmin(ExportMixin, admin.ModelAdmin):
         html = f"<a href='{obj.get_absolute_url()}'>{html}</a>"
         return mark_safe(html)
 
-    display_thumbnail.short_description = "View"
+    display_thumbnail.short_description = _("View")
     display_thumbnail.allow_tags = True
     display_thumbnail.admin_order_field = "url"
 
@@ -183,7 +184,7 @@ class AssetAdmin(ExportMixin, admin.ModelAdmin):
             html = f"<a href='{change_url}'>{obj.owner.displayname}</a>"
         return mark_safe(html)
 
-    display_owner.short_description = "Owner"
+    display_owner.short_description = _("Owner")
 
     search_fields = (
         "name",
@@ -244,7 +245,7 @@ class AssetCollectionAdmin(admin.ModelAdmin):
     def display_asset_count(self, obj):
         return obj.assets.count()
 
-    display_asset_count.short_description = "Assets"
+    display_asset_count.short_description = _("Assets")
     display_asset_count.admin_order_field = "asset_count"
 
 
@@ -296,7 +297,7 @@ class AssetOwnerAdmin(ExportMixin, admin.ModelAdmin):
         lister_url = f"{reverse('admin:icosa_asset_changelist')}?owner__id__exact={obj.id}"
         return mark_safe(f"<a href='{lister_url}'>{obj.asset_set.count()}</a>")
 
-    display_asset_count.short_description = "Assets"
+    display_asset_count.short_description = _("Assets")
     display_asset_count.admin_order_field = "asset_count"
 
     def display_django_user(self, obj):
@@ -310,7 +311,7 @@ class AssetOwnerAdmin(ExportMixin, admin.ModelAdmin):
 
         return mark_safe(html)
 
-    display_django_user.short_description = "Django User"
+    display_django_user.short_description = _("Django User")
 
 
 @admin.register(MastheadSection)
@@ -329,7 +330,7 @@ class MastheadSectionAdmin(ExportMixin, admin.ModelAdmin):
             html = ""
         return mark_safe(html)
 
-    display_thumbnail.short_description = "Thumbnail"
+    display_thumbnail.short_description = _("Thumbnail")
     display_thumbnail.allow_tags = True
 
 
@@ -442,10 +443,10 @@ class UserAdmin(OriginalUserAdmin):
             link_html = ""
         return mark_safe(link_html)
 
-    display_owners.short_description = "Asset Owners"
+    display_owners.short_description = _("Asset Owners")
     display_owners.admin_order_field = "assetowner__displayname"
 
-    @admin.action(description="Mark selected users as not staff")
+    @admin.action(description=_("Mark selected users as not staff"))
     def make_not_staff(modeladmin, request, queryset):
         queryset.update(is_staff=False)
 

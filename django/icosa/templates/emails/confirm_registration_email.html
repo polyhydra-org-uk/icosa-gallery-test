@@ -1,5 +1,6 @@
-<p>Hi {{ user.username }},</p>
-<p>Please click on <a href="{{request.scheme}}://{{ domain }}{% url "icosa:activate_registration" uidb64=uid token=token %}">this link</a> to confirm your registration.</p>
-<p>If the above link doesn't work, copy and paste the below link into your browser:</p>
+{% load i18n %}
+<p>{% blocktrans with username=user.username %}Hi {{ username }},{% endblocktrans %}</p>
+<p>{% blocktrans with link=request.scheme|add:"://"|add:domain|add:activate_url %}Please click on <a href="{{ link }}">this link</a> to confirm your registration.{% endblocktrans %}</p>
+<p>{% trans "If the above link doesn't work, copy and paste the below link into your browser:" %}</p>
 <p>{{request.scheme}}://{{ domain }}{% url "icosa:activate_registration" uidb64=uid token=token %}</p>
-<p>If you didn't request this email, please ignore it.</p>
+<p>{% trans "If you didn't request this email, please ignore it." %}</p>

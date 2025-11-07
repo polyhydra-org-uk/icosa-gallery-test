@@ -1,5 +1,6 @@
+{% load i18n %}
 {% if is_peeking_at_asset %}
 <div class="infobanner warn">
-    <p>You are viewing this page as staff. Normal users will not be able to see this page.</p>
+    <p>{% trans "You are viewing this page as staff. Normal users will not be able to see this page." %}</p>
 </div>
 {% endif %}

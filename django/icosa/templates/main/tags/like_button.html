@@ -1,13 +1,14 @@
 {% load fontawesome_tags %}
+{% load i18n %}
 {% if request.user.is_authenticated %}
 <form class="like-widget" hx-post="{% url 'icosa:toggle_like' %}" hx-target="this" hx-swap="outerHTML">
     {% csrf_token %}
     <input type="hidden" name="assetId" value="{{ asset_url }}">
     <button>
     {% if is_liked %}
-        {% fa_icon "solid" "heart" %} <span class="likelabel">unlike</span>
+        {% fa_icon "solid" "heart" %} <span class="likelabel">{% trans "unlike" %}</span>
     {% else %}
-        {% fa_icon "regular" "heart" %} <span class="likelabel">like</span>
+        {% fa_icon "regular" "heart" %} <span class="likelabel">{% trans "like" %}</span>
     {% endif %}
     </button>
 </form>

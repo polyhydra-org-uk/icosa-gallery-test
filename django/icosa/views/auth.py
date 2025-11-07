@@ -29,6 +29,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import never_cache
 from icosa.forms import (
     NewUserForm,
@@ -90,7 +91,7 @@ def debug_password_reset_email(request):
         user,
         settings.ADMIN_EMAIL,
     )
-    return HttpResponse("ok")
+    return HttpResponse(_("ok"))
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -104,7 +105,7 @@ def debug_registration_email(request):
         settings.ADMIN_EMAIL,
     )
 
-    return HttpResponse("ok")
+    return HttpResponse(_("ok"))
 
 
 def render_login_error(request, error: Optional[str] = None):
@@ -143,7 +144,7 @@ def custom_login(request):
         user = authenticate(request, username=username, password=password)
         if user is None or not user.is_active:
             # Icosa user auth failed, so we return early.
-            return render_login_error(request, "Please enter a valid email or password")
+            return render_login_error(request, _("Please enter a valid email or password"))
         login(request, user)
 
         # Claim any assets that were created before the user logged in

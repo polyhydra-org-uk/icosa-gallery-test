@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load paginator_tags %}
+{% load i18n %}
 
 {% block extrahead %}
     {{ block.super }}
@@ -11,8 +12,8 @@
     <div class="container">
         <div class="row">
             <div class="col">
-                <h1>Search results</h1>
-                <p>{{ result_count }} result{{ result_count|pluralize }}{% if search_query %} for &ldquo;{{ search_query }}&rdquo;{% endif %}</p>
+                <h1>{% trans "Search results" %}</h1>
+                <p>{% blocktrans count counter=result_count %}{{ counter }} result{% plural %}{{ counter }} results{% endblocktrans %}{% if search_query %} {% blocktrans with query=search_query %}for &ldquo;{{ query }}&rdquo;{% endblocktrans %}{% endif %}</p>
             </div>
         </div>
         <div class="sketch-list">

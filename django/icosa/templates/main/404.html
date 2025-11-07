@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 
 {% load static %}
+{% load i18n %}
 
 {% block content %}
     <div class="container">
         <div class="row">
             <div class="col">
-                <h3>Page not found</h3>
-                <p>Sorry! The page you wanted might have moved. You shoud be able to find what you want by returning to the home page.</p>
+                <h3>{% trans "Page not found" %}</h3>
+                <p>{% trans "Sorry! The page you wanted might have moved. You shoud be able to find what you want by returning to the home page." %}</p>
             </div>
         </div>
     </div>

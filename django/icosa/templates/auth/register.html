@@ -1,27 +1,28 @@
 {% extends "base.html" %}
 
 {% load honeypot %}
+{% load i18n %}
 
 {% block content %}
     <div class="container">
         <div class="row">
             <div class="col col-lg-6 offset-lg-3">
                 {% if config.SIGNUP_OPEN %}
-                    <h1>Register</h1>
+                    <h1>{% trans "Register" %}</h1>
                     {% if request.user.is_anonymous %}
                         {% if success %}
-                            <p>Please click the link in the email we've sent you to complete your registration.</p>
+                            <p>{% trans "Please click the link in the email we've sent you to complete your registration." %}</p>
                         {% else %}
                             <form action="{% url 'icosa:register' %}" method="post" novalidate>
                                 {% csrf_token %}
                                 {% render_honeypot_field %}
                                 {{ form.as_p }}
-                                <button class="btn btn-primary" type="submit">Register</button>
+                                <button class="btn btn-primary" type="submit">{% trans "Register" %}</button>
                             </form>
                         {% endif %}
                     {% else %}
-                        <p>You are currently logged in.</p>
-                        <p>Manage <a href="{% url 'icosa:uploads' %}">your uploads</a></p>
+                        <p>{% trans "You are currently logged in." %}</p>
+                        <p>{% blocktrans %}Manage <a href="{% url 'icosa:uploads' %}">your uploads</a>{% endblocktrans %}</p>
                     {% endif %}
                 {% else %}
                     {% include "partials/login_notice.html" %}

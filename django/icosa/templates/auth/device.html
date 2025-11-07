@@ -1,13 +1,14 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% block content %}
 <div class="container logindevice">
     <div class="row">
         <div class="col text-center">
             <h2 class="uppercase">
                 {% if client_secret %}
-                    {% if client_id %}{{ client_id }} Login{% else %}Login Code{% endif %}
+                    {% if client_id %}{% blocktrans with id=client_id %}{{ id }} Login{% endblocktrans %}{% else %}{% trans "Login Code" %}{% endif %}
                 {% else %}
-                    Login Code
+                    {% trans "Login Code" %}
                 {% endif %}
             </h2>
         </div>
@@ -20,20 +21,20 @@
             <div class="text-center">
                 {% if request.user.is_authenticated and device_code %}
                     {% if client_secret and form_action %}
-                        <p>Press the button below to send your login code to Open Brush.</p>
+                        <p>{% trans "Press the button below to send your login code to Open Brush." %}</p>
                         <form action="{{ form_action }}" method="POST">
                             <input type="hidden" name="client_secret" value="{{ client_secret }}">
                             <input type="hidden" name="device_code" value="{{ device_code }}">
-                            <input type="submit" class="btn btn-primary" value="Login">
+                            <input type="submit" class="btn btn-primary" value="{% trans "Login" %}">
                         </form>
                     {% else %}
                         <p class="device-code">{{ device_code }}</p>
-                        <p>Return to your app and enter this code to login to your Icosa account</p>
+                        <p>{% trans "Return to your app and enter this code to login to your Icosa account" %}</p>
                     {% endif %}
-                    <p class="warning"><em>Only do this if you are running an app that came from a source that you trust with access to your Icosa account</em></p>
+                    <p class="warning"><em>{% trans "Only do this if you are running an app that came from a source that you trust with access to your Icosa account" %}</em></p>
                 {% else %}
-                    <p>You must <a href="{% url 'icosa:login' %}?next={{ request.path }}">login</a> to get a device code.</p>
-                    <p>Or if it's easier visit <strong><a href="{{ request.build_absolute_uri }}">{{ request.build_absolute_uri }}</a></strong> on another device.</p>
+                    <p>{% blocktrans %}You must <a href="{% url 'icosa:login' %}?next={{ request.path }}">login</a> to get a device code.{% endblocktrans %}</p>
+                    <p>{% blocktrans with uri=request.build_absolute_uri %}Or if it's easier visit <strong><a href="{{ uri }}">{{ uri }}</a></strong> on another device.{% endblocktrans %}</p>
                 {% endif %}
             </div>
         </div>

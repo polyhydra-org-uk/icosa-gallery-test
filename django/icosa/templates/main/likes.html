@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load paginator_tags %}
+{% load i18n %}
 
 {% block extrahead %}
     {{ block.super }}
@@ -19,7 +20,7 @@
                     {% include "partials/sketch_list_item.html" %}
                 {% endfor %}
             {% else %}
-                <p>You haven't liked anything yet.</p>
+                <p>{% trans "You haven't liked anything yet." %}</p>
             {% endif %}
         </div>
         {% include "partials/pagination.html" %}

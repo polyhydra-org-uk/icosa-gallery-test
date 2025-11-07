@@ -3,6 +3,7 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 from django.db.models import QuerySet
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
 
 class AssetOwnerManager(models.Manager):
@@ -25,28 +26,47 @@ class AssetOwnerManager(models.Manager):
 
 class AssetOwner(models.Model):
     id = models.BigAutoField(primary_key=True)
-    url = models.CharField("User Name / URL", max_length=255, unique=True)
-    email = models.EmailField(max_length=255, null=True, blank=True)
-    displayname = models.CharField("Display Name", max_length=255, blank=False, default=None)
-    description = models.TextField(blank=True, null=True)
-    migrated = models.BooleanField(default=False)
-    imported = models.BooleanField(default=False)
-    is_claimed = models.BooleanField(default=True)
+    url = models.CharField(
+        _("User Name / URL"),
+        max_length=255,
+        unique=True,
+        help_text=_("Unique username or URL identifier for this creator"),
+    )
+    email = models.EmailField(_("Email"), max_length=255, null=True, blank=True, help_text=_("Creator's email address"))
+    displayname = models.CharField(
+        _("Display Name"),
+        max_length=255,
+        blank=False,
+        default=None,
+        help_text=_("Public display name shown to users"),
+    )
+    description = models.TextField(_("Description"), blank=True, null=True, help_text=_("Creator profile description"))
+    migrated = models.BooleanField(_("Migrated"), default=False, help_text=_("Whether this account was migrated from another system"))
+    imported = models.BooleanField(_("Imported"), default=False, help_text=_("Whether this account was imported from Google Poly"))
+    is_claimed = models.BooleanField(_("Is Claimed"), default=True, help_text=_("Whether this account has been claimed by a user"))
     django_user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        verbose_name=_("Django User"),
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
+        help_text=_("Associated Django user account"),
     )
     merged_with = models.ForeignKey(
         "self",
+        verbose_name=_("Merged With"),
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
+        help_text=_("Another asset owner this account was merged with"),
     )
-    disable_profile = models.BooleanField(default=False)
+    disable_profile = models.BooleanField(_("Disable Profile"), default=False, help_text=_("Whether the profile page is disabled"))
 
     objects = AssetOwnerManager()
+
+    class Meta:
+        verbose_name = _("Asset Owner")
+        verbose_name_plural = _("Asset Owners")
 
     def get_displayname(self):
         if self.django_user:

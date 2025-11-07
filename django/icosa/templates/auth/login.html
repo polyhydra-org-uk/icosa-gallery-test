@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 {% load timedelta_filter %}
+{% load i18n %}
 {% block content %}
     <div class="loginuser container">
         <div class="row">
             <div class="text-center col">
-                <h2>Log In</h2>
+                <h2>{% trans "Log In" %}</h2>
             </div>
         </div>
         <div class="row">
@@ -13,7 +14,7 @@
                     <div class="login-form row">
                         <div class="col-md-8 col-12 offset-md-2">
                             {% if cooloff_timedelta %}
-                                <div role="alert" class="fade alert alert-danger show">Account locked. Too many failed login attempts. Please try again in {{ cooloff_timedelta|timedelta:"{minutes}" }} minutes.</div>
+                                <div role="alert" class="fade alert alert-danger show">{% blocktrans with minutes=cooloff_timedelta|timedelta:"{minutes}" %}Account locked. Too many failed login attempts. Please try again in {{ minutes }} minutes.{% endblocktrans %}</div>
                             {% else %}
                                 {% if error %}
                                     <div role="alert" class="fade alert alert-danger show">{{ error }}</div>
@@ -21,9 +22,9 @@
                                 <form class="form-inline" action="{% url 'icosa:login' %}{% if redirect_to %}?{{ redirect_to_field_name }}={{ redirect_to }}{% endif %}" method="post">
                                     {% csrf_token %}
                                     <div class="form-group">
-                                        <label class="form-label sr-only" for="email">Email:</label>
+                                        <label class="form-label sr-only" for="email">{% trans "Email:" %}</label>
                                         <input
-                                            placeholder="Email"
+                                            placeholder="{% trans "Email" %}"
                                             autocomplete="email"
                                             type="text"
                                             id="email"
@@ -33,9 +34,9 @@
                                     </div>
                                     <br>
                                     <div class="form-group">
-                                        <label class="form-label sr-only" for="password">Password:</label>
+                                        <label class="form-label sr-only" for="password">{% trans "Password:" %}</label>
                                         <input
-                                            placeholder="Password"
+                                            placeholder="{% trans "Password" %}"
                                             autocomplete="current-password"
                                             type="password"
                                             id="password"
@@ -44,9 +45,9 @@
                                         >
                                     </div>
                                     <br>
-                                    <button type="submit" class="btn btn-primary">Log in</button>
+                                    <button type="submit" class="btn btn-primary">{% trans "Log in" %}</button>
                                 </form>
-                                <a href="{% url 'icosa:password_reset' %}">Forgot Password?</a>
+                                <a href="{% url 'icosa:password_reset' %}">{% trans "Forgot Password?" %}</a>
                             {% endif %}
                         </div>
                     </div>
@@ -57,7 +58,7 @@
             <div class="text-center col-lg-6 offset-lg-3">
                 <br>
                 {% if config.SIGNUP_OPEN %}
-                    <a href="/register">Register a new account</a>
+                    <a href="/register">{% trans "Register a new account" %}</a>
                 {% else %}
                     {% include "partials/login_notice.html" %}
                 {% endif %}

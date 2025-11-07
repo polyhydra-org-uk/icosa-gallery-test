@@ -1,4 +1,5 @@
-<p>Form submitted by: {{ contact_email }}</p>
-<p>Message:</p>
+{% load i18n %}
+<p>{% blocktrans with email=contact_email %}Form submitted by: {{ email }}{% endblocktrans %}</p>
+<p>{% trans "Message:" %}</p>
 {{ message|linebreaksbr }}
 

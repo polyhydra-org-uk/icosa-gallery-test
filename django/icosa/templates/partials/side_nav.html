@@ -1,5 +1,6 @@
 {% load fontawesome_tags %}
 {% load static %}
+{% load i18n %}
 <div id="sidenav" class="pro-sidebar sidenav collapsed">
     <div class="pro-sidebar-inner">
         <div class="pro-sidebar-layout">
@@ -17,7 +18,7 @@
                                             {% fa_icon "solid" "house-chimney" %}
                                         </span>
                                     </span>
-                                    <span class="pro-item-content">Home</span>
+                                    <span class="pro-item-content">{% trans "Home" %}</span>
                                 </a>
                             </div>
                         </li>
@@ -25,7 +26,7 @@
                 </nav>
                 <nav class="pro-menu shaped square">
                     <ul>
-                        <h3 class="hide-when-collapsed">Me</h3>
+                        <h3 class="hide-when-collapsed">{% trans "Me" %}</h3>
                         <div>
                             {% if user is not None and not user.is_anonymous %}
                                 {% if user.get_absolute_url %}
@@ -37,7 +38,7 @@
                                                         {% fa_icon "solid" "user" %}
                                                     </span>
                                                 </span>
-                                                <span class="pro-item-content">My Profile</span>
+                                                <span class="pro-item-content">{% trans "My Profile" %}</span>
                                             </a>
                                         </div>
                                     </li>
@@ -50,7 +51,7 @@
                                                     {% fa_icon "solid" "list" %}
                                                 </span>
                                             </span>
-                                            <span class="pro-item-content">My Uploads</span>
+                                            <span class="pro-item-content">{% trans "My Uploads" %}</span>
                                         </a>
                                     </div>
                                 </li>
@@ -62,7 +63,7 @@
                                                     {% fa_icon "solid" "heart" %}
                                                 </span>
                                             </span>
-                                            <span class="pro-item-content">My Likes</span>
+                                            <span class="pro-item-content">{% trans "My Likes" %}</span>
                                         </a>
                                     </div>
                                 </li>
@@ -74,7 +75,7 @@
                                                     {% fa_icon "solid" "gear" %}
                                                 </span>
                                             </span>
-                                            <span class="pro-item-content">My Settings</span>
+                                            <span class="pro-item-content">{% trans "My Settings" %}</span>
                                         </a>
                                     </div>
                                 </li>
@@ -86,7 +87,7 @@
                                                     {% fa_icon "solid" "right-from-bracket" %}
                                                 </span>
                                             </span>
-                                            <span class="pro-item-content">Log out</span>
+                                            <span class="pro-item-content">{% trans "Log out" %}</span>
                                         </a>
                                     </div>
                                 </li>
@@ -99,7 +100,7 @@
                                                     {% fa_icon "solid" "right-to-bracket" %}
                                                 </span>
                                             </span>
-                                            <span class="pro-item-content">Log in</span>
+                                            <span class="pro-item-content">{% trans "Log in" %}</span>
                                         </a>
                                     </div>
                                 </li>
@@ -109,7 +110,7 @@
                 </nav>
                 <nav class="pro-menu shaped square hide-when-collapsed">
                     <ul>
-                        <h3>Explore</h3>
+                        <h3>{% trans "Explore" %}</h3>
                         <div>
                             <li class="pro-menu-item">
                                 <div class="pro-inner-item" tabindex="0" role="button">
@@ -119,7 +120,7 @@
                                                 {% fa_icon "solid" "paw" %}
                                             </span>
                                         </span>
-                                        <span class="pro-item-content">Animals & Pets</span>
+                                        <span class="pro-item-content">{% trans "Animals & Pets" %}</span>
                                     </a>
                                 </div>
                             </li>
@@ -131,7 +132,7 @@
                                                 {% fa_icon "solid" "building" %}
                                             </span>
                                         </span>
-                                        <span class="pro-item-content">Architecture</span>
+                                        <span class="pro-item-content">{% trans "Architecture" %}</span>
                                     </a>
                                 </div>
                             </li>
@@ -143,7 +144,7 @@
                                                 {% fa_icon "solid" "utensils" %}
                                             </span>
                                         </span>
-                                        <span class="pro-item-content">Food</span>
+                                        <span class="pro-item-content">{% trans "Food" %}</span>
                                     </a>
                                 </div>
                             </li>
@@ -155,7 +156,7 @@
                                                 {% fa_icon "solid" "leaf" %}
                                             </span>
                                         </span>
-                                        <span class="pro-item-content">Nature</span>
+                                        <span class="pro-item-content">{% trans "Nature" %}</span>
                                     </a>
                                 </div>
                             </li>
@@ -167,7 +168,7 @@
                                                 {% fa_icon "solid" "people-group" %}
                                             </span>
                                         </span>
-                                        <span class="pro-item-content">People</span>
+                                        <span class="pro-item-content">{% trans "People" %}</span>
                                     </a>
                                 </div>
                             </li>
@@ -179,7 +180,7 @@
                                                 {% fa_icon "solid" "flask" %}
                                             </span>
                                         </span>
-                                        <span class="pro-item-content">Science</span>
+                                        <span class="pro-item-content">{% trans "Science" %}</span>
                                     </a>
                                 </div>
                             </li>
@@ -191,7 +192,7 @@
                                                 {% fa_icon "solid" "microchip" %}
                                             </span>
                                         </span>
-                                        <span class="pro-item-content">Technology</span>
+                                        <span class="pro-item-content">{% trans "Technology" %}</span>
                                     </a>
                                 </div>
                             </li>
@@ -200,7 +201,7 @@
                 </nav>
                 <div class="pro-sidebar-footer">
                     <div class="socials text-center hide-when-collapsed">
-                        <h5>Join our Community!</h5>
+                        <h5>{% trans "Join our Community!" %}</h5>
                         <a href="https://mastodon.gamedev.place/@openbrushapp" alt="mastodon" rel="noreferrer" target="_blank">
                             {% fa_icon "brands" "mastodon" %}
                         </a>
@@ -229,7 +230,7 @@
                     <div class="text-center title hide-when-collapsed">
                         <div>
                             <a target="_blank" href="https://opencollective.com/icosa">
-                                <h5>Support us!</h5>
+                                <h5>{% trans "Support us!" %}</h5>
                             </a>
                         </div>
                     </div>

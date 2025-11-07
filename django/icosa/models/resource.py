@@ -5,6 +5,7 @@ from constance import config
 
 from django.conf import settings
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from .asset import Asset
 from .common import (
@@ -14,17 +15,33 @@ from .helpers import format_upload_path
 
 
 class Resource(models.Model):
-    asset = models.ForeignKey(Asset, null=True, blank=False, on_delete=models.CASCADE)
-    format = models.ForeignKey("Format", null=True, blank=True, on_delete=models.CASCADE)
-    contenttype = models.CharField(max_length=255, null=True, blank=False)
+    asset = models.ForeignKey(Asset, verbose_name=_("Asset"), null=True, blank=False, on_delete=models.CASCADE)
+    format = models.ForeignKey("Format", verbose_name=_("Format"), null=True, blank=True, on_delete=models.CASCADE)
+    contenttype = models.CharField(_("Content Type"), max_length=255, null=True, blank=False, help_text=_("MIME type of this resource"))
     file = models.FileField(
+        _("File"),
         null=True,
         blank=True,
         max_length=FILENAME_MAX_LENGTH,
         upload_to=format_upload_path,
+        help_text=_("Uploaded file"),
     )
-    external_url = models.CharField(max_length=FILENAME_MAX_LENGTH, null=True, blank=True)
-    hide_from_downloads = models.BooleanField(default=False)
+    external_url = models.CharField(
+        _("External URL"),
+        max_length=FILENAME_MAX_LENGTH,
+        null=True,
+        blank=True,
+        help_text=_("URL to external resource file"),
+    )
+    hide_from_downloads = models.BooleanField(
+        _("Hide from Downloads"),
+        default=False,
+        help_text=_("Whether this resource should be hidden from download lists"),
+    )
+
+    class Meta:
+        verbose_name = _("Resource")
+        verbose_name_plural = _("Resources")
 
     @property
     def url(self) -> Optional[str]:

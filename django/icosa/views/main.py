@@ -31,6 +31,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.clickjacking import xframe_options_exempt
 from icosa.forms import (
@@ -141,7 +142,7 @@ def handler500(request):
 def handler403(request, exception=None):
     if isinstance(exception, Ratelimited):
         return render(request, "main/429.html", status=429)
-    return HttpResponseForbidden("Forbidden")
+    return HttpResponseForbidden(_("Forbidden"))
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -152,7 +153,7 @@ def div_by_zero(request):
 
 @never_cache
 def health(request):
-    return HttpResponse("ok")
+    return HttpResponse(_("ok"))
 
 
 def landing_page(
@@ -363,7 +364,7 @@ def uploads(request):
                     asset.state = ASSET_STATE_FAILED
                     asset.save()
 
-            messages.add_message(request, messages.INFO, "Your upload has started.")
+            messages.add_message(request, messages.INFO, _("Your upload has started."))
             return HttpResponseRedirect(reverse("icosa:uploads"))
     elif request.method == "GET":
         form = AssetUploadForm()
@@ -618,7 +619,7 @@ def asset_log_download(request, asset_url):
         asset.downloads += 1
         asset.save()
 
-        return HttpResponse("ok")
+        return HttpResponse(_("ok"))
     else:
         return HttpResponseNotAllowed(["POST"])
 
@@ -774,7 +775,7 @@ def asset_delete(request, asset_url):
         messages.add_message(
             request,
             messages.INFO,
-            f"Deleted '{asset_name}'.",
+            _("Deleted '%(asset_name)s'.") % {"asset_name": asset_name},
         )
         return HttpResponseRedirect(reverse("icosa:uploads"))
     else:
@@ -1056,13 +1057,13 @@ def make_asset_thumbnail(request, asset_url):
         asset = get_object_or_404(Asset, url=asset_url)
         b64_image = request.POST.get("thumbnail_image", None)
         if not b64_image:
-            return HttpResponseBadRequest("No image data received")
+            return HttpResponseBadRequest(_("No image data received"))
 
         image_file = b64_to_img(b64_image)
 
         asset.preview_image = image_file
         asset.save()
-        body = f"<p>Image saved</p><p><a href='{asset.get_absolute_url()}'>Back to asset</a></p><p><a href='/'>Back to home</a></p>"
+        body = _("<p>Image saved</p><p><a href='%(asset_url)s'>Back to asset</a></p><p><a href='/'>Back to home</a></p>") % {"asset_url": asset.get_absolute_url()}
 
         return HttpResponse(mark_safe(body))
     else:
@@ -1076,7 +1077,7 @@ def make_asset_masthead_image(request, asset_url):
         asset = get_object_or_404(Asset, url=asset_url)
         b64_image = request.POST.get("masthead_image", None)
         if not b64_image:
-            return HttpResponseBadRequest("No image data received")
+            return HttpResponseBadRequest(_("No image data received"))
 
         image_file = b64_to_img(b64_image)
         create = {
@@ -1088,7 +1089,7 @@ def make_asset_masthead_image(request, asset_url):
             # So we need to save it separately after the create.
             masthead.image = image_file
             masthead.save()
-        body = f"<p>Image saved</p><p><a href='{asset.get_absolute_url()}'>Back to asset</a></p><p><a href='/'>Back to home</a></p>"
+        body = _("<p>Image saved</p><p><a href='%(asset_url)s'>Back to asset</a></p><p><a href='/'>Back to home</a></p>") % {"asset_url": asset.get_absolute_url()}
 
         return HttpResponse(mark_safe(body))
     else:

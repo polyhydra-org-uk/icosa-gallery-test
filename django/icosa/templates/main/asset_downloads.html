@@ -3,6 +3,7 @@
 {% load asset_tags %}
 {% load fontawesome_tags %}
 {% load static %}
+{% load i18n %}
 
 {% block content %}
 <div class="sketch-info container">
@@ -10,10 +11,10 @@
         <div class="col col-lg-6 offset-lg-3">
             <div>
                 <h2>
-                    Downloads for: {{ asset.name }}
+                    {% blocktrans with name=asset.name %}Downloads for: {{ name }}{% endblocktrans %}
                 </h2>
-                <p>Choose from the below formats in which to download this model.</p>
-                <p>This list is currently experimental and you might run into issues with some formats. Those marked "(alternative)" might work better for you if the original format type fails.</p>
+                <p>{% trans "Choose from the below formats in which to download this model." %}</p>
+                <p>{% trans "This list is currently experimental and you might run into issues with some formats. Those marked \"(alternative)\" might work better for you if the original format type fails." %}</p>
                 {% for format, resources in downloadable_formats.items %}
                     {% if resources.zip_archive_url  %}
                         <p>
@@ -36,7 +37,7 @@
                                 data-file="{% for file in resources.files_to_zip %}{{ file }}{% if not forloop.last %},{% endif %}{% endfor %}"
                             >
                                 {% fa_icon "solid" "download" %} {{ format }}
-                            </a><span class="download-spinner" style="display:none;margin-inline-start:1em;">{% fa_icon "solid" "arrows-rotate" "fa-spin" %}&nbsp;Processing files</span>
+                            </a><span class="download-spinner" style="display:none;margin-inline-start:1em;">{% fa_icon "solid" "arrows-rotate" "fa-spin" %}&nbsp;{% trans "Processing files" %}</span>
                         </p>
                         {% endif %}
                         {% if resources.files_to_zip_with_suffix %}
@@ -47,8 +48,8 @@
                                 data-file="{% for file in resources.files_to_zip_with_suffix %}{{ file }}{% if not forloop.last %},{% endif %}{% endfor %}"
                             >
 
-                                {% fa_icon "solid" "download" %} {{ format }} (alternative)
-                            </a><span class="download-spinner" style="display:none;margin-inline-start:1em;">{% fa_icon "solid" "arrows-rotate" "fa-spin" %}&nbsp;Processing files</span>
+                                {% fa_icon "solid" "download" %} {{ format }} {% trans "(alternative)" %}
+                            </a><span class="download-spinner" style="display:none;margin-inline-start:1em;">{% fa_icon "solid" "arrows-rotate" "fa-spin" %}&nbsp;{% trans "Processing files" %}</span>
                         </p>
                         {% endif %}
                     {% endif %}

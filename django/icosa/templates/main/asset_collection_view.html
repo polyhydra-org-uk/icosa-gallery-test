@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load paginator_tags %}
+{% load i18n %}
 
 {% block extrahead %}
     {{ block.super }}
@@ -9,7 +10,7 @@
 {% block content %}
 <div>
     <div class="container">
-        <h1>{{ collection.name }} by {{ collection.user.displayname }}</h1>
+        <h1>{% blocktrans with name=collection.name user=collection.user.displayname %}{{ name }} by {{ user }}{% endblocktrans %}</h1>
         {% if collection.description %}
             {{ collection.description|linebreaks }}
         {% endif %}

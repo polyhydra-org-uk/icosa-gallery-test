@@ -183,6 +183,7 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",  # Language selection based on user preference
     "django.middleware.cache.UpdateCacheMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.cache.FetchFromCacheMiddleware",
@@ -297,6 +298,23 @@ PASSWORD_RESET_TIMEOUT = 3600  # 1 hour, in seconds
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
+
+# Supported languages for localization
+from django.utils.translation import gettext_lazy as _
+
+LANGUAGES = [
+    ("en", _("English")),
+    ("es", _("Spanish")),
+    ("fr", _("French")),
+    ("de", _("German")),
+    ("ja", _("Japanese")),
+    ("zh-hans", _("Simplified Chinese")),
+]
+
+# Path to locale files
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, "locale"),
+]
 
 TIME_ZONE = "UTC"
 

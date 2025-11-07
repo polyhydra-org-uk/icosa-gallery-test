@@ -3,6 +3,7 @@
 {% load asset_tags %}
 {% load fontawesome_tags %}
 {% load static %}
+{% load i18n %}
 
 {% block extrahead %}
 <script>
@@ -19,8 +20,8 @@
         <div class="col text-center">
             <br>
             <br>
-            <h1>Coming Soon</h1>
-            <p>A completely re-written Icosa Gallery with lots of new features!</p>
+            <h1>{% trans "Coming Soon" %}</h1>
+            <p>{% trans "A completely re-written Icosa Gallery with lots of new features!" %}</p>
             <br>
             <div class="ml-embedded" data-form="cTULY6"></div>
             <br>

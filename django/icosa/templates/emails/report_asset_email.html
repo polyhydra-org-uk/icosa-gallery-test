@@ -1,4 +1,9 @@
-Asset <a href="{{request.scheme}}://{{ domain }}{{ asset.get_absolute_url }}">{{ asset.name|default:'unnamed asset' }}</a> has been reported by {% if reporter is None %}an anonymous user{% else %}{{ reporter }}{% endif %} with the following reason:
+{% load i18n %}
+{% if reporter is None %}
+{% blocktrans with name=asset.name|default:"unnamed asset" link=request.scheme|add:"://"|add:domain|add:asset.get_absolute_url %}Asset <a href="{{ link }}">{{ name }}</a> has been reported by an anonymous user with the following reason:{% endblocktrans %}
+{% else %}
+{% blocktrans with name=asset.name|default:"unnamed asset" link=request.scheme|add:"://"|add:domain|add:asset.get_absolute_url reporter_name=reporter %}Asset <a href="{{ link }}">{{ name }}</a> has been reported by {{ reporter_name }} with the following reason:{% endblocktrans %}
+{% endif %}
 
 {{ reason }}
 

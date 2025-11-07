@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from .asset import Asset
 from .common import FILENAME_MAX_LENGTH, STORAGE_PREFIX
@@ -10,25 +11,47 @@ ROLE_MAX_LENGTH = 255
 
 
 class Format(models.Model):
-    asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
-    format_type = models.CharField(max_length=255)
-    zip_archive_url = models.CharField(max_length=FILENAME_MAX_LENGTH, null=True, blank=True)
-    triangle_count = models.PositiveIntegerField(null=True, blank=True)
-    lod_hint = models.PositiveIntegerField(null=True, blank=True)
+    asset = models.ForeignKey(Asset, verbose_name=_("Asset"), on_delete=models.CASCADE)
+    format_type = models.CharField(_("Format Type"), max_length=255, help_text=_("File format type (e.g., GLTF, OBJ, FBX)"))
+    zip_archive_url = models.CharField(
+        _("ZIP Archive URL"),
+        max_length=FILENAME_MAX_LENGTH,
+        null=True,
+        blank=True,
+        help_text=_("URL to archived version of this format"),
+    )
+    triangle_count = models.PositiveIntegerField(_("Triangle Count"), null=True, blank=True, help_text=_("Number of triangles in this format"))
+    lod_hint = models.PositiveIntegerField(_("LOD Hint"), null=True, blank=True, help_text=_("Level of detail hint"))
     role = models.CharField(
+        _("Role"),
         max_length=ROLE_MAX_LENGTH,
         null=True,
         blank=True,
+        help_text=_("Role or purpose of this format"),
     )
     root_resource = models.ForeignKey(
         "Resource",
+        verbose_name=_("Root Resource"),
         null=True,
         blank=True,
         related_name="root_formats",
         on_delete=models.SET_NULL,
+        help_text=_("Main resource file for this format"),
     )
-    is_preferred_for_gallery_viewer = models.BooleanField(default=False)
-    is_preferred_for_download = models.BooleanField(default=True)
+    is_preferred_for_gallery_viewer = models.BooleanField(
+        _("Preferred for Gallery Viewer"),
+        default=False,
+        help_text=_("Whether this format should be used in the 3D viewer"),
+    )
+    is_preferred_for_download = models.BooleanField(
+        _("Preferred for Download"),
+        default=True,
+        help_text=_("Whether this format should be offered for download"),
+    )
+
+    class Meta:
+        verbose_name = _("Format")
+        verbose_name_plural = _("Formats")
 
     def add_root_resource(self, resource):
         if not resource.format:
@@ -74,6 +97,8 @@ class Format(models.Model):
         return role_label.label
 
     class Meta:
+        verbose_name = _("Format")
+        verbose_name_plural = _("Formats")
         indexes = [
             models.Index(
                 fields=[
@@ -92,10 +117,14 @@ class FormatRoleLabel(models.Model):
     See Format.user_label for an example of an implementation.
     """
 
-    create_time = models.DateTimeField()
-    update_time = models.DateTimeField(null=True, blank=True)
-    role_text = models.CharField(max_length=ROLE_MAX_LENGTH)
-    label = models.CharField(max_length=1024)
+    create_time = models.DateTimeField(_("Created"))
+    update_time = models.DateTimeField(_("Last Updated"), null=True, blank=True)
+    role_text = models.CharField(_("Role Text"), max_length=ROLE_MAX_LENGTH, help_text=_("Internal role identifier"))
+    label = models.CharField(_("Label"), max_length=1024, help_text=_("User-friendly label for this role"))
+
+    class Meta:
+        verbose_name = _("Format Role Label")
+        verbose_name_plural = _("Format Role Labels")
 
     def save(self, *args, **kwargs):
         update_timestamps = kwargs.pop("update_timestamps", True)

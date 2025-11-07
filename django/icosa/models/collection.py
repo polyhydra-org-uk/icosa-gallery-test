@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core.validators import FileExtensionValidator
 from django.db import IntegrityError, models
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 from icosa.models import Asset
 
 from .common import (
@@ -16,21 +17,46 @@ from .helpers import collection_image_upload_path
 
 
 class AssetCollection(models.Model):
-    create_time = models.DateTimeField(auto_now_add=True)
-    update_time = models.DateTimeField(auto_now=True, null=True, blank=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="user_collections")
-    assets = models.ManyToManyField(Asset, blank=True, through="AssetCollectionAsset")
-    url = models.CharField(max_length=255, unique=True)
-    name = models.CharField(max_length=255)
-    description = models.TextField(blank=True, null=True)
+    create_time = models.DateTimeField(_("Created"), auto_now_add=True)
+    update_time = models.DateTimeField(_("Last Updated"), auto_now=True, null=True, blank=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name=_("User"),
+        on_delete=models.CASCADE,
+        related_name="user_collections",
+        help_text=_("Owner of this collection"),
+    )
+    assets = models.ManyToManyField(
+        Asset,
+        verbose_name=_("Assets"),
+        blank=True,
+        through="AssetCollectionAsset",
+        help_text=_("Assets included in this collection"),
+    )
+    url = models.CharField(_("URL"), max_length=255, unique=True, help_text=_("Unique URL identifier for this collection"))
+    name = models.CharField(_("Name"), max_length=255, help_text=_("Collection name"))
+    description = models.TextField(_("Description"), blank=True, null=True, help_text=_("Collection description"))
     image = models.ImageField(
+        _("Image"),
         max_length=FILENAME_MAX_LENGTH,
         blank=True,
         null=True,
         upload_to=collection_image_upload_path,
         validators=[FileExtensionValidator(allowed_extensions=VALID_THUMBNAIL_EXTENSIONS)],
+        help_text=_("Cover image for this collection"),
     )
-    visibility = models.CharField(max_length=255, default=PRIVATE, choices=ASSET_VISIBILITY_CHOICES, db_default=PRIVATE)
+    visibility = models.CharField(
+        _("Visibility"),
+        max_length=255,
+        default=PRIVATE,
+        choices=ASSET_VISIBILITY_CHOICES,
+        db_default=PRIVATE,
+        help_text=_("Who can view this collection"),
+    )
+
+    class Meta:
+        verbose_name = _("Asset Collection")
+        verbose_name_plural = _("Asset Collections")
 
     def get_thumbnail_url(self):
         thumbnail_url = (
@@ -74,10 +100,15 @@ class AssetCollection(models.Model):
 
 
 class AssetCollectionAsset(models.Model):
-    asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
-    collection = models.ForeignKey(AssetCollection, on_delete=models.CASCADE, related_name="collected_assets")
-    create_time = models.DateTimeField(auto_now_add=True)
-    order = models.PositiveIntegerField(default=0)
+    asset = models.ForeignKey(Asset, verbose_name=_("Asset"), on_delete=models.CASCADE)
+    collection = models.ForeignKey(
+        AssetCollection,
+        verbose_name=_("Collection"),
+        on_delete=models.CASCADE,
+        related_name="collected_assets",
+    )
+    create_time = models.DateTimeField(_("Created"), auto_now_add=True)
+    order = models.PositiveIntegerField(_("Order"), default=0, help_text=_("Display order in collection"))
 
     # @transaction.atomic
     # def save(self, *args, **kwargs):
@@ -88,4 +119,6 @@ class AssetCollectionAsset(models.Model):
         return f"{self.order}: {self.asset.name}"
 
     class Meta:
+        verbose_name = _("Collection Asset")
+        verbose_name_plural = _("Collection Assets")
         ordering = ("order",)
