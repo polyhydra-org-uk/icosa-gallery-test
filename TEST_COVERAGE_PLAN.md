@@ -50,8 +50,12 @@ django/icosa/tests/
 │   ├── __init__.py
 │   ├── test_file_helpers.py      # 80+ tests
 │   └── test_snowflake.py         # 60+ tests
-├── test_views/                    # View tests (pending)
-│   └── __init__.py
+├── test_views/                    # View tests
+│   ├── __init__.py
+│   ├── test_main_views.py        # 80+ tests
+│   ├── test_auth_views.py        # 60+ tests
+│   ├── test_asset_collection_views.py  # 30+ tests
+│   └── test_autocomplete_views.py      # 10+ tests
 └── test_commands/                 # Management command tests (pending)
     └── __init__.py
 ```
@@ -214,7 +218,90 @@ django/icosa/tests/
 - License upgrade from v3 to v4
 - Thumbnail override field
 
-### 4. Helpers (140+ tests)
+### 4. Views (180+ tests)
+
+#### Main Views (80 tests)
+- Home page and landing pages (home, openbrush, blocks, other)
+- Category exploration views
+- Asset detail view with access control
+- Asset downloads and download logging
+- User and owner profile pages
+- My likes page
+- Uploads management (GET and POST for file uploads)
+- Asset editing (GET form, POST updates, thumbnail override)
+- Asset publishing workflow
+- Asset deletion with ownership validation
+- Asset reporting with rate limiting and honeypot
+- Search functionality with pagination
+- Toggle like/unlike functionality
+- User settings (GET form, POST updates, password change)
+- Template views (about, terms, supporters, licenses, privacy_policy)
+- Artist info and enquiry form
+- Error handlers (404, 500, 403/429)
+- Health check endpoint
+- Superuser-only views (div_by_zero, make_asset_thumbnail, make_asset_masthead_image)
+
+#### Auth Views (60 tests)
+- Custom login with email/password
+  * Valid credentials
+  * Invalid credentials
+  * Inactive users
+  * Redirect after login
+  * Claiming unclaimed assets on login
+- Logout (GET confirmation, POST logout)
+- User registration
+  * Valid registration
+  * Email confirmation
+  * Duplicate email handling
+  * Inactive user re-registration
+- Registration activation with token validation
+- Password reset flow
+  * Request reset
+  * Email sending
+  * Token validation
+  * Confirm new password
+  * Complete page
+- Device code generation
+  * Authenticated user code generation
+  * Client identification (Open Brush, Open Blocks)
+  * Old code deletion
+  * Expired code cleanup
+  * Deprecated format support
+- Device login success page
+
+#### Asset Collection Views (30 tests)
+- Collection list view
+  * GET collection list
+  * Public vs private visibility
+  * Owner's own collections
+- Collection list POST actions
+  * Add asset to collection
+  * Remove asset from collection
+  * Create new collection with asset
+  * Invalid asset/action handling
+- Collection modal view
+  * Authentication requirement
+  * Display user's collections
+  * Mark collections containing asset
+  * Hide other users' collections
+- Individual collection view
+  * Public collection viewing
+  * Private collection access control
+  * Asset display within collection
+  * Pagination
+  * Unlisted collection handling
+
+#### Autocomplete Views (10 tests)
+- Tag autocomplete
+  * Authentication requirement
+  * Query filtering
+  * User-specific tags (only from user's assets)
+  * Superuser sees all tags
+  * Case-insensitive search
+  * Empty results for users with no assets
+  * Tag creation support
+
+### 5. Helpers (140+ tests)
 
 #### get_content_type Function
 - Content type detection for all supported formats
@@ -357,7 +444,7 @@ pytest -m "not slow"
 
 ## Coverage Goals
 
-### Current Status: ~670+ tests
+### Current Status: ~850+ tests
 - ✅ Models: Comprehensive coverage (315+ tests)
   * User, Asset, Format, Resource, Collection
   * OAuth2, AssetOwner, Tag, UserLike, DeviceCode
@@ -369,18 +456,18 @@ pytest -m "not slow"
 - ✅ Helpers: Complete coverage (140+ tests)
   * File validation and format detection
   * Snowflake ID generation and extraction
-- ⏳ Views: Pending
+- ✅ Views: Comprehensive coverage (180+ tests)
+  * Main views, auth views, collection views, autocomplete
 - ⏳ Management Commands: Pending (17 commands)
 - ⏳ Middleware: Pending
 - ⏳ Template Tags: Pending
 
 ### Future Additions
-1. **View Tests** - Test all main views, auth views, collection views
-2. **Management Command Tests** - Test 17 management commands
-3. **Middleware Tests** - Test custom middleware
-4. **Template Tag Tests** - Test custom template tags
-5. **Integration Tests** - End-to-end workflow tests
-6. **Performance Tests** - Load and stress testing
+1. **Management Command Tests** - Test 17 management commands
+2. **Middleware Tests** - Test custom middleware
+3. **Template Tag Tests** - Test custom template tags
+4. **Integration Tests** - End-to-end workflow tests
+5. **Performance Tests** - Load and stress testing
 
 ## Best Practices
 
