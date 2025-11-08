@@ -21,6 +21,7 @@ from icosa.models import (
     Oauth2Client,
     Oauth2Code,
     Oauth2Token,
+    DeviceCode,
 )
 from icosa.models.common import PUBLIC, PRIVATE, UNLISTED
 
@@ -267,6 +268,17 @@ class Oauth2TokenFactory(DjangoModelFactory):
     access_token_revoked_at = 0
     refresh_token_revoked_at = 0
     expires_in = 3600
+
+
+class DeviceCodeFactory(DjangoModelFactory):
+    """Factory for creating DeviceCode instances."""
+
+    class Meta:
+        model = DeviceCode
+
+    user = SubFactory(UserFactory)
+    devicecode = Faker('pystr', max_chars=6)
+    expiry = LazyAttribute(lambda _: timezone.now() + timezone.timedelta(hours=1))
 
 
 # Helper functions for creating complex test data
