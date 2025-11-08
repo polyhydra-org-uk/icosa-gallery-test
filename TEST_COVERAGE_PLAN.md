@@ -36,16 +36,20 @@ django/icosa/tests/
 │   ├── test_collection.py        # 45+ tests
 │   ├── test_oauth.py             # 45+ tests
 │   ├── test_asset_owner.py       # 35+ tests
-│   └── test_tag_and_like.py      # 30+ tests
+│   ├── test_tag_and_like.py      # 30+ tests
+│   └── test_device_code.py       # 30+ tests
 ├── test_api/                      # API endpoint tests
 │   ├── __init__.py
-│   └── test_assets_api.py        # 50+ tests
+│   ├── test_assets_api.py        # 50+ tests
+│   ├── test_users_api.py         # 70+ tests
+│   └── test_login_api.py         # 50+ tests
 ├── test_forms/                    # Form validation tests
 │   ├── __init__.py
 │   └── test_asset_forms.py       # 45+ tests
 ├── test_helpers/                  # Helper function tests
 │   ├── __init__.py
-│   └── test_file_helpers.py      # 80+ tests
+│   ├── test_file_helpers.py      # 80+ tests
+│   └── test_snowflake.py         # 60+ tests
 ├── test_views/                    # View tests (pending)
 │   └── __init__.py
 └── test_commands/                 # Management command tests (pending)
@@ -54,7 +58,7 @@ django/icosa/tests/
 
 ## Test Coverage by Component
 
-### 1. Models (285+ tests)
+### 1. Models (315+ tests)
 
 #### User Model (25 tests)
 - User creation and authentication
@@ -122,7 +126,21 @@ django/icosa/tests/
 - Chronological ordering
 - Like count aggregation
 
-### 2. API Endpoints (50+ tests)
+#### DeviceCode Model (30 tests)
+- Device code creation and validation
+- String representation
+- Max length enforcement (6 characters)
+- User relationship
+- Expiry functionality (valid/expired detection)
+- Querying by validity and device code
+- Case-insensitive search
+- User cascade deletion
+- Multiple codes per user
+- Alphanumeric validation
+- get_or_create pattern
+- Short and long expiry handling
+
+### 2. API Endpoints (170+ tests)
 
 #### Asset Retrieval
 - GET /api/assets/{asset} for public/unlisted/private assets
@@ -144,6 +162,30 @@ django/icosa/tests/
 - user_owns_asset validation
 - user_can_view_asset permission checks
 - Public vs private access control
+
+#### Users API (70 tests)
+- GET /api/users/me endpoint (authenticated and unauthenticated)
+- PATCH /api/users/me endpoint (update display name, URL, description)
+- URL uniqueness validation
+- Multiple owners error handling
+- GET /api/users/me/assets endpoint (pagination, filtering)
+- POST /api/users/me/assets endpoint (asset creation, owner auto-creation)
+- GET /api/users/me/assets/{asset} endpoint (specific asset retrieval)
+- DELETE /api/users/me/assets/{asset} endpoint (asset deletion, media hiding)
+- GET /api/users/me/likedassets endpoint (liked assets, visibility filtering)
+
+#### Login API (50 tests)
+- POST /api/login/device_login endpoint
+- Valid device code authentication
+- Expired and invalid code handling
+- Code deletion after use
+- Case-insensitive matching
+- JWT token generation and validation
+- Multiple codes error handling
+- Empty code and missing parameter validation
+- Token expiry verification
+- User association in token
+- Whitespace and special character handling
 
 ### 3. Forms (45+ tests)
 
@@ -172,7 +214,7 @@ django/icosa/tests/
 - License upgrade from v3 to v4
 - Thumbnail override field
 
-### 4. File Helpers (80+ tests)
+### 4. Helpers (140+ tests)
 
 #### get_content_type Function
 - Content type detection for all supported formats
@@ -197,6 +239,45 @@ django/icosa/tests/
 - CONTENT_TYPE_MAP accuracy
 - IMAGE_REGEX pattern matching
 
+#### Snowflake ID Generation (60 tests)
+- generate_snowflake function:
+  * Integer return, positive IDs, uniqueness
+  * Incremental ordering
+  * Timestamp component extraction
+  * Process ID component (bits 4-21, capped at 0x3FFFF)
+  * Counter component (bits 0-3, wraps at 15)
+  * 64-bit layout validation
+
+- get_timestamp function:
+  * ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ)
+  * Parseability to datetime
+  * Recent timestamp validation
+
+- get_timestamp_raw function:
+  * Integer millisecond timestamp
+  * After ICOSA_EPOCH validation
+  * Correct bit extraction
+
+- get_snowflake_timestamp function:
+  * Datetime object return
+  * Year range validation (2020-2100)
+
+- get_snowflake_timestamp_raw function:
+  * Consistency with get_timestamp_raw
+
+- ICOSA_EPOCH constant:
+  * Value validation (1609459200000 = 2020-01-01)
+
+- Round-trip tests:
+  * Generation and extraction consistency
+  * Temporal ordering
+  * Method consistency
+
+- Edge cases:
+  * Max process ID capping
+  * Zero process ID
+  * Rapid generation (100 IDs)
+
 ## Test Factories
 
 Comprehensive factory-boy factories for all models:
@@ -210,6 +291,7 @@ Comprehensive factory-boy factories for all models:
 - **UserLikeFactory**
 - **AssetCollectionFactory** / AssetCollectionAssetFactory
 - **Oauth2ClientFactory** / Oauth2CodeFactory / Oauth2TokenFactory
+- **DeviceCodeFactory**
 - **FormatRoleLabelFactory**
 
 Helper functions for complex scenarios:
@@ -275,13 +357,20 @@ pytest -m "not slow"
 
 ## Coverage Goals
 
-### Current Status: ~460+ tests
-- ✅ Models: Comprehensive coverage
-- ✅ API Endpoints: Core endpoints covered
-- ✅ Forms: All main forms tested
-- ✅ File Helpers: Complete coverage
+### Current Status: ~670+ tests
+- ✅ Models: Comprehensive coverage (315+ tests)
+  * User, Asset, Format, Resource, Collection
+  * OAuth2, AssetOwner, Tag, UserLike, DeviceCode
+- ✅ API Endpoints: Extensive coverage (170+ tests)
+  * Assets API, Users API, Login API
+  * Authentication, authorization, pagination
+- ✅ Forms: All main forms tested (45+ tests)
+  * Upload, Edit, Publish, Report forms
+- ✅ Helpers: Complete coverage (140+ tests)
+  * File validation and format detection
+  * Snowflake ID generation and extraction
 - ⏳ Views: Pending
-- ⏳ Management Commands: Pending
+- ⏳ Management Commands: Pending (17 commands)
 - ⏳ Middleware: Pending
 - ⏳ Template Tags: Pending
 
