@@ -17,7 +17,12 @@ from django.core.files import File
 from icosa.models import Asset, Format, Resource
 
 
-GLTF_TRANSFORM_SCRIPT = "/django/gltf_transform.js"
+# Path to the gltf_transform.js script - it's in the Django project root (django/)
+# which is the parent directory of the Django project settings
+GLTF_TRANSFORM_SCRIPT = os.path.join(
+    settings.BASE_DIR,
+    "gltf_transform.js"
+)
 
 # Available transformation operations
 AVAILABLE_OPERATIONS = [
