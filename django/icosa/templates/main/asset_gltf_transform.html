@@ -72,9 +72,9 @@
                                 <div class="row">
                                     {% for choice in form.operations %}
                                         <div class="col-md-6">
-                                            <div class="form-check">
+                                            <div style="display: flex; align-items: center; margin: 0.5rem 0;">
                                                 {{ choice.tag }}
-                                                <label class="form-check-label" for="{{ choice.id_for_label }}">
+                                                <label style="margin-left: 0.5rem; margin-bottom: 0; cursor: pointer;" for="{{ choice.id_for_label }}">
                                                     {{ choice.choice_label }}
                                                 </label>
                                             </div>
@@ -94,9 +94,9 @@
                                 <div class="row">
                                     {% for choice in form.format_types %}
                                         <div class="col-md-4">
-                                            <div class="form-check">
+                                            <div style="display: flex; align-items: center; margin: 0.5rem 0;">
                                                 {{ choice.tag }}
-                                                <label class="form-check-label" for="{{ choice.id_for_label }}">
+                                                <label style="margin-left: 0.5rem; margin-bottom: 0; cursor: pointer;" for="{{ choice.id_for_label }}">
                                                     {{ choice.choice_label }}
                                                 </label>
                                             </div>
