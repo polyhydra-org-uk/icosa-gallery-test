@@ -18,7 +18,7 @@
         <div class="col-md-8 offset-md-2">
             <h1>GLTF Transform - {{ asset.name }}</h1>
 
-            <div class="alert alert-info">
+            <div class="well" style="background-color: rgba(0, 153, 98, 0.1); border-left: 3px solid var(--color-primary);">
                 <h5>{% fa_icon "solid" "circle-info" %} About GLTF Transform</h5>
                 <p>
                     Use these tools to optimize and transform your GLTF/GLB files.
@@ -31,39 +31,32 @@
             </div>
 
             {% if gltf_formats %}
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5>Available GLTF Formats</h5>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group">
-                        {% for format in gltf_formats %}
-                            <li class="list-group-item">
-                                <strong>{{ format.format_type }}</strong>
-                                {% if format.root_resource %}
-                                    - {{ format.root_resource.file.name|default:"No file name" }}
-                                    {% if format.root_resource.file.size %}
-                                        ({{ format.root_resource.file.size|filesizeformat }})
-                                    {% endif %}
-                                {% else %}
-                                    - No resource file
+                <div class="well mb-4">
+                    <h5>Available GLTF Formats</h5>
+                    <ul style="list-style: none; padding-left: 0;">
+                    {% for format in gltf_formats %}
+                        <li style="padding: 0.5rem 0; border-bottom: 1px solid var(--color-card-surface);">
+                            <strong>{{ format.format_type }}</strong>
+                            {% if format.root_resource %}
+                                - {{ format.root_resource.file.name|default:"No file name" }}
+                                {% if format.root_resource.file.size %}
+                                    ({{ format.root_resource.file.size|filesizeformat }})
                                 {% endif %}
-                            </li>
-                        {% endfor %}
-                        </ul>
-                    </div>
+                            {% else %}
+                                - No resource file
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                    </ul>
                 </div>
 
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Select Transformations</h5>
-                    </div>
-                    <div class="card-body">
+                <div class="well">
+                    <h5>Select Transformations</h5>
                         <form method="post" novalidate>
                             {% csrf_token %}
 
                             {% if form.errors %}
-                                <div class="alert alert-danger">
+                                <div class="error">
                                     <strong>This form has errors. Please correct them below.</strong>
                                 </div>
                             {% endif %}
@@ -71,10 +64,10 @@
                             <div class="mb-4">
                                 <label class="form-label">{{ form.operations.label }}</label>
                                 {% if form.operations.help_text %}
-                                    <small class="form-text text-muted d-block">{{ form.operations.help_text }}</small>
+                                    <small style="color: var(--color-base-mid); display: block; margin-bottom: 0.5rem;">{{ form.operations.help_text }}</small>
                                 {% endif %}
                                 {% if form.operations.errors %}
-                                    <div class="alert alert-danger">{{ form.operations.errors }}</div>
+                                    <div class="error">{{ form.operations.errors }}</div>
                                 {% endif %}
                                 <div class="row">
                                     {% for choice in form.operations %}
@@ -93,10 +86,10 @@
                             <div class="mb-4">
                                 <label class="form-label">{{ form.format_types.label }}</label>
                                 {% if form.format_types.help_text %}
-                                    <small class="form-text text-muted d-block">{{ form.format_types.help_text }}</small>
+                                    <small style="color: var(--color-base-mid); display: block; margin-bottom: 0.5rem;">{{ form.format_types.help_text }}</small>
                                 {% endif %}
                                 {% if form.format_types.errors %}
-                                    <div class="alert alert-danger">{{ form.format_types.errors }}</div>
+                                    <div class="error">{{ form.format_types.errors }}</div>
                                 {% endif %}
                                 <div class="row">
                                     {% for choice in form.format_types %}
@@ -120,47 +113,42 @@
                                 <a href="{% url 'icosa:asset_edit' asset.url %}" class="btn btn-secondary">Cancel</a>
                             </div>
                         </form>
-                    </div>
                 </div>
 
-                <div class="card mt-4">
-                    <div class="card-header">
-                        <h5>Transformation Descriptions</h5>
-                    </div>
-                    <div class="card-body">
-                        <dl>
-                            <dt>Dedup</dt>
-                            <dd>Removes duplicate vertex or texture data, reducing file size without affecting visual quality.</dd>
+                <div class="well mt-4">
+                    <h5>Transformation Descriptions</h5>
+                    <dl>
+                        <dt>Dedup</dt>
+                        <dd>Removes duplicate vertex or texture data, reducing file size without affecting visual quality.</dd>
 
-                            <dt>Prune</dt>
-                            <dd>Removes unreferenced properties and orphaned data from the file.</dd>
+                        <dt>Prune</dt>
+                        <dd>Removes unreferenced properties and orphaned data from the file.</dd>
 
-                            <dt>Quantize</dt>
-                            <dd>Reduces precision of vertex attributes to decrease file size with minimal visual impact.</dd>
+                        <dt>Quantize</dt>
+                        <dd>Reduces precision of vertex attributes to decrease file size with minimal visual impact.</dd>
 
-                            <dt>Weld</dt>
-                            <dd>Merges duplicate vertices that share the same position, reducing geometry complexity.</dd>
+                        <dt>Weld</dt>
+                        <dd>Merges duplicate vertices that share the same position, reducing geometry complexity.</dd>
 
-                            <dt>Join</dt>
-                            <dd>Combines compatible mesh primitives to reduce draw calls and improve performance.</dd>
+                        <dt>Join</dt>
+                        <dd>Combines compatible mesh primitives to reduce draw calls and improve performance.</dd>
 
-                            <dt>Flatten</dt>
-                            <dd>Flattens the scene graph hierarchy, which can improve rendering performance.</dd>
+                        <dt>Flatten</dt>
+                        <dd>Flattens the scene graph hierarchy, which can improve rendering performance.</dd>
 
-                            <dt>Instance</dt>
-                            <dd>Creates GPU instances for reused meshes, significantly reducing file size and improving performance.</dd>
+                        <dt>Instance</dt>
+                        <dd>Creates GPU instances for reused meshes, significantly reducing file size and improving performance.</dd>
 
-                            <dt>Resample</dt>
-                            <dd>Resamples animation curves to a consistent framerate, potentially reducing animation data size.</dd>
+                        <dt>Resample</dt>
+                        <dd>Resamples animation curves to a consistent framerate, potentially reducing animation data size.</dd>
 
-                            <dt>Metal-Rough</dt>
-                            <dd>Converts materials to the metallic-roughness PBR workflow if they use a different workflow.</dd>
-                        </dl>
-                    </div>
+                        <dt>Metal-Rough</dt>
+                        <dd>Converts materials to the metallic-roughness PBR workflow if they use a different workflow.</dd>
+                    </dl>
                 </div>
 
             {% else %}
-                <div class="alert alert-warning">
+                <div class="well" style="background-color: rgba(250, 221, 3, 0.1); border-left: 3px solid var(--color-alert-warning);">
                     <p>This asset does not have any GLTF/GLB formats to transform.</p>
                     <a href="{% url 'icosa:asset_edit' asset.url %}" class="btn btn-primary">Back to Edit</a>
                 </div>
