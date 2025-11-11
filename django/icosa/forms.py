@@ -223,6 +223,53 @@ class AssetEditForm(forms.ModelForm):
         }
 
 
+class GLTFTransformForm(forms.Form):
+    """Form for applying glTF-Transform operations to asset files"""
+
+    # Available operations with descriptions
+    OPERATIONS = [
+        ("dedup", "Remove duplicate vertex or texture data"),
+        ("prune", "Remove unreferenced properties"),
+        ("quantize", "Quantize geometry to reduce file size"),
+        ("weld", "Merge duplicate vertices"),
+        ("join", "Join compatible primitives"),
+        ("flatten", "Flatten scene graph hierarchy"),
+        ("instance", "Create instances of reused meshes"),
+        ("resample", "Resample animation curves"),
+        ("metalrough", "Convert to metallic-roughness workflow"),
+    ]
+
+    operations = forms.MultipleChoiceField(
+        choices=OPERATIONS,
+        widget=forms.CheckboxSelectMultiple,
+        required=True,
+        label="Transformations to Apply",
+        help_text="Select one or more transformations to optimize your GLTF file",
+    )
+
+    format_types = forms.MultipleChoiceField(
+        choices=[
+            ("GLTF2", "GLTF 2.0"),
+            ("GLB", "GLB (Binary GLTF)"),
+            ("GLTF1", "GLTF 1.0"),
+        ],
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+        initial=["GLTF2", "GLB"],
+        label="Formats to Transform",
+        help_text="Select which format types to apply transformations to",
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        operations = cleaned_data.get("operations")
+
+        if not operations:
+            self.add_error("operations", "Please select at least one transformation operation")
+
+        return cleaned_data
+
+
 class UserSettingsForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

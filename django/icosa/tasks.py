@@ -1,5 +1,5 @@
 import time
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from huey import signals
 from huey.contrib.djhuey import db_task, signal
@@ -9,10 +9,13 @@ from ninja.files import UploadedFile
 from django.db import transaction
 from django.utils import timezone
 from icosa.api.schema import AssetMetaData
+from icosa.helpers.gltf_transform import transform_asset_formats
 from icosa.helpers.upload import upload_api_asset
 from icosa.helpers.upload_web_ui import upload
 from icosa.models import (
+    ASSET_STATE_COMPLETE,
     ASSET_STATE_FAILED,
+    ASSET_STATE_UPLOADING,
     Asset,
     BulkSaveLog,
     User,
@@ -125,3 +128,59 @@ def queue_save_all_assets(
     resume: bool = False,
 ):
     save_all_assets(resume)
+
+
+@db_task()
+def queue_gltf_transform(
+    asset: Asset,
+    operations: List[str],
+    format_types: Optional[List[str]] = None,
+    options: Optional[Dict] = None,
+) -> Dict:
+    """
+    Queue a glTF transformation task.
+
+    Args:
+        asset: The Asset instance to transform
+        operations: List of operations to apply
+        format_types: List of format types to transform (optional)
+        options: Operation-specific options (optional)
+
+    Returns:
+        Dictionary containing transformation results
+    """
+    try:
+        # Set asset state to uploading (processing)
+        asset.state = ASSET_STATE_UPLOADING
+        asset.save(update_timestamps=False)
+
+        # Perform the transformation
+        results = transform_asset_formats(
+            asset=asset,
+            operations=operations,
+            options=options,
+            format_types=format_types,
+        )
+
+        # Check if all transformations were successful
+        all_success = all(result.get("success", False) for result in results.values())
+
+        if all_success:
+            asset.state = ASSET_STATE_COMPLETE
+        else:
+            asset.state = ASSET_STATE_FAILED
+
+        asset.save(update_timestamps=True)
+
+        return {
+            "success": all_success,
+            "results": results,
+        }
+
+    except Exception as e:
+        asset.state = ASSET_STATE_FAILED
+        asset.save(update_timestamps=False)
+        return {
+            "success": False,
+            "error": str(e),
+        }

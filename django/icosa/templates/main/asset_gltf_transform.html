@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% load asset_tags %}
+{% load fontawesome_tags %}
+{% load static %}
+
+{% block extrahead %}
+{% endblock extrahead %}
+
+{% block banner %}
+{% include "partials/js_version_banner.html" %}
+{% admin_peek_banner request asset %}
+{% endblock banner %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h1>GLTF Transform - {{ asset.name }}</h1>
+
+            <div class="alert alert-info">
+                <h5>{% fa_icon "solid" "info-circle" %} About GLTF Transform</h5>
+                <p>
+                    Use these tools to optimize and transform your GLTF/GLB files.
+                    These operations can reduce file size, improve performance, and clean up your 3D models.
+                </p>
+                <p class="mb-0">
+                    <strong>Note:</strong> The transformation will be applied to the selected format types.
+                    A backup is not created automatically - you may want to download your original file first.
+                </p>
+            </div>
+
+            {% if gltf_formats %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Available GLTF Formats</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                        {% for format in gltf_formats %}
+                            <li class="list-group-item">
+                                <strong>{{ format.format_type }}</strong>
+                                {% if format.root_resource %}
+                                    - {{ format.root_resource.file.name|default:"No file name" }}
+                                    {% if format.root_resource.file.size %}
+                                        ({{ format.root_resource.file.size|filesizeformat }})
+                                    {% endif %}
+                                {% else %}
+                                    - No resource file
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Select Transformations</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" novalidate>
+                            {% csrf_token %}
+
+                            {% if form.errors %}
+                                <div class="alert alert-danger">
+                                    <strong>This form has errors. Please correct them below.</strong>
+                                </div>
+                            {% endif %}
+
+                            <div class="mb-4">
+                                <label class="form-label">{{ form.operations.label }}</label>
+                                {% if form.operations.help_text %}
+                                    <small class="form-text text-muted d-block">{{ form.operations.help_text }}</small>
+                                {% endif %}
+                                {% if form.operations.errors %}
+                                    <div class="alert alert-danger">{{ form.operations.errors }}</div>
+                                {% endif %}
+                                <div class="row">
+                                    {% for choice in form.operations %}
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                {{ choice.tag }}
+                                                <label class="form-check-label" for="{{ choice.id_for_label }}">
+                                                    {{ choice.choice_label }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label">{{ form.format_types.label }}</label>
+                                {% if form.format_types.help_text %}
+                                    <small class="form-text text-muted d-block">{{ form.format_types.help_text }}</small>
+                                {% endif %}
+                                {% if form.format_types.errors %}
+                                    <div class="alert alert-danger">{{ form.format_types.errors }}</div>
+                                {% endif %}
+                                <div class="row">
+                                    {% for choice in form.format_types %}
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                {{ choice.tag }}
+                                                <label class="form-check-label" for="{{ choice.id_for_label }}">
+                                                    {{ choice.choice_label }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    {% fa_icon "solid" "magic" %}
+                                    Apply Transformations
+                                </button>
+                                <a href="{% url 'icosa:asset_edit' asset.url %}" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5>Transformation Descriptions</h5>
+                    </div>
+                    <div class="card-body">
+                        <dl>
+                            <dt>Dedup</dt>
+                            <dd>Removes duplicate vertex or texture data, reducing file size without affecting visual quality.</dd>
+
+                            <dt>Prune</dt>
+                            <dd>Removes unreferenced properties and orphaned data from the file.</dd>
+
+                            <dt>Quantize</dt>
+                            <dd>Reduces precision of vertex attributes to decrease file size with minimal visual impact.</dd>
+
+                            <dt>Weld</dt>
+                            <dd>Merges duplicate vertices that share the same position, reducing geometry complexity.</dd>
+
+                            <dt>Join</dt>
+                            <dd>Combines compatible mesh primitives to reduce draw calls and improve performance.</dd>
+
+                            <dt>Flatten</dt>
+                            <dd>Flattens the scene graph hierarchy, which can improve rendering performance.</dd>
+
+                            <dt>Instance</dt>
+                            <dd>Creates GPU instances for reused meshes, significantly reducing file size and improving performance.</dd>
+
+                            <dt>Resample</dt>
+                            <dd>Resamples animation curves to a consistent framerate, potentially reducing animation data size.</dd>
+
+                            <dt>Metal-Rough</dt>
+                            <dd>Converts materials to the metallic-roughness PBR workflow if they use a different workflow.</dd>
+                        </dl>
+                    </div>
+                </div>
+
+            {% else %}
+                <div class="alert alert-warning">
+                    <p>This asset does not have any GLTF/GLB formats to transform.</p>
+                    <a href="{% url 'icosa:asset_edit' asset.url %}" class="btn btn-primary">Back to Edit</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

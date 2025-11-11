@@ -159,6 +159,11 @@ urlpatterns = [
         name="asset_edit",
     ),
     path(
+        "edit/<str:asset_url>/gltf-transform",
+        main_views.asset_gltf_transform,
+        name="asset_gltf_transform",
+    ),
+    path(
         "asset_admin_change/<str:asset_url>",
         main_views.asset_forward_to_admin_change,
         name="asset_admin_change",

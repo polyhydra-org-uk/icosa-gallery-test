@@ -56,9 +56,15 @@
                 <a href="{% url 'icosa:uploads' %}" class="btn btn-secondary">Cancel</a>
             </form>
             {% if is_editable %}
-                <p>
+                <div class="mt-3">
+                  {% if asset.has_gltf_any %}
+                    <a href="{% url 'icosa:asset_gltf_transform' asset.url %}" class="btn btn-sm btn-info me-2">
+                      {% fa_icon "solid" "magic" %}
+                      Transform GLTF
+                    </a>
+                  {% endif %}
                   <button href="javascript:void(0);" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#delete-modal">Delete</button>
-                </p>
+                </div>
             {% endif %}
         </div>
     </div>

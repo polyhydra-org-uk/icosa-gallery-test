@@ -40,10 +40,12 @@ from icosa.forms import (
     AssetPublishForm,
     AssetReportForm,
     AssetUploadForm,
+    GLTFTransformForm,
     UserSettingsForm,
 )
 from icosa.helpers.email import spawn_send_html_mail
 from icosa.helpers.file import b64_to_img
+from icosa.helpers.gltf_transform import get_gltf_formats_for_asset
 from icosa.helpers.snowflake import generate_snowflake
 from icosa.helpers.upload_web_ui import upload
 from icosa.models import (
@@ -62,7 +64,7 @@ from icosa.models import (
     MastheadSection,
     UserLike,
 )
-from icosa.tasks import queue_upload_asset_web_ui
+from icosa.tasks import queue_gltf_transform, queue_upload_asset_web_ui
 
 User = get_user_model()
 
@@ -706,6 +708,87 @@ def asset_edit(request, asset_url):
         "is_editable": is_editable,
         "form": form,
         "page_title": f"Edit {asset.name}",
+    }
+    return render(
+        request,
+        template,
+        context,
+    )
+
+
+@login_required
+@never_cache
+def asset_gltf_transform(request, asset_url):
+    """
+    View for applying glTF-Transform operations to an asset.
+    Accessible as a separate page from the edit page.
+    """
+    template = "main/asset_gltf_transform.html"
+    is_superuser = request.user.is_superuser
+
+    if is_superuser:
+        asset = get_object_or_404(Asset, url=asset_url)
+    else:
+        asset = get_object_or_404(Asset, url=asset_url, owner__in=request.user.assetowner_set.all())
+
+    # Check if asset has any GLTF formats
+    gltf_formats = get_gltf_formats_for_asset(asset)
+
+    if not gltf_formats:
+        messages.error(request, "This asset does not have any GLTF/GLB formats to transform.")
+        return HttpResponseRedirect(reverse("icosa:asset_edit", kwargs={"asset_url": asset.url}))
+
+    if request.method == "GET":
+        form = GLTFTransformForm()
+    elif request.method == "POST":
+        form = GLTFTransformForm(request.POST)
+        if form.is_valid():
+            operations = form.cleaned_data["operations"]
+            format_types = form.cleaned_data.get("format_types") or ["GLTF2", "GLB"]
+
+            # Queue the transformation task
+            if getattr(settings, "ENABLE_TASK_QUEUE", True) is True:
+                queue_gltf_transform(
+                    asset=asset,
+                    operations=operations,
+                    format_types=format_types,
+                )
+                messages.success(
+                    request,
+                    f"GLTF transformation has been queued. Operations: {', '.join(operations)}"
+                )
+            else:
+                # If task queue is disabled, perform transformation synchronously
+                from icosa.helpers.gltf_transform import transform_asset_formats
+                results = transform_asset_formats(
+                    asset=asset,
+                    operations=operations,
+                    format_types=format_types,
+                )
+
+                # Check results
+                all_success = all(result.get("success", False) for result in results.values())
+                if all_success:
+                    messages.success(request, "GLTF transformation completed successfully!")
+                else:
+                    failed_formats = [fmt for fmt, result in results.items() if not result.get("success", False)]
+                    messages.error(
+                        request,
+                        f"GLTF transformation failed for: {', '.join(failed_formats)}"
+                    )
+
+            return HttpResponseRedirect(reverse("icosa:asset_edit", kwargs={"asset_url": asset.url}))
+        else:
+            if settings.DEBUG:
+                print(form.errors)
+    else:
+        return HttpResponseNotAllowed(["GET", "POST"])
+
+    context = {
+        "asset": asset,
+        "form": form,
+        "gltf_formats": gltf_formats,
+        "page_title": f"Transform GLTF - {asset.name}",
     }
     return render(
         request,
