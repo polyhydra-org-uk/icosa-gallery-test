@@ -22,7 +22,11 @@ const {
   simplify,
   metalRough,
   unlit,
+  draco,
+  textureCompress,
+  meshopt,
 } = require('@gltf-transform/functions');
+const { ALL_EXTENSIONS } = require('@gltf-transform/extensions');
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -31,19 +35,25 @@ if (args.length < 3) {
   console.error('Usage: node gltf_transform.js <input_file> <output_file> <operations>');
   console.error('Operations: comma-separated list of operations to apply');
   console.error('Available operations:');
+  console.error('  Core Optimizations:');
   console.error('  - dedup: Remove duplicate vertex or texture data');
   console.error('  - prune: Remove unreferenced properties from the file');
-  console.error('  - resample: Resample animation curves to a consistent framerate');
   console.error('  - quantize: Quantize geometry to reduce file size');
   console.error('  - weld: Merge duplicate vertices');
-  console.error('  - flatten: Flatten scene graph hierarchy');
   console.error('  - join: Join compatible primitives');
+  console.error('  - flatten: Flatten scene graph hierarchy');
   console.error('  - instance: Create instances of reused meshes');
+  console.error('  - resample: Resample animation curves to a consistent framerate');
+  console.error('  - metalrough: Convert materials to metallic-roughness workflow');
+  console.error('  Additional Operations:');
   console.error('  - partition: Partition binary data into separate files');
   console.error('  - unweld: Unweld vertices (opposite of weld)');
   console.error('  - simplify: Simplify geometry (reduce triangle count)');
-  console.error('  - metalrough: Convert materials to metallic-roughness workflow');
   console.error('  - unlit: Convert materials to unlit');
+  console.error('  Compression (High Priority):');
+  console.error('  - draco: Draco mesh compression');
+  console.error('  - textureCompress: KTX2/Basis Universal texture compression');
+  console.error('  - meshopt: Meshoptimizer compression');
   process.exit(1);
 }
 
@@ -64,8 +74,8 @@ if (args[3]) {
 
 async function transformGLTF() {
   try {
-    // Create IO handler
-    const io = new NodeIO();
+    // Create IO handler and register all extensions (needed for compression)
+    const io = new NodeIO().registerExtensions(ALL_EXTENSIONS);
 
     // Read the input file
     console.log(`Reading file: ${inputFile}`);
@@ -132,6 +142,33 @@ async function transformGLTF() {
           break;
         case 'unlit':
           await document.transform(unlit(options.unlit || {}));
+          break;
+        case 'draco':
+          await document.transform(
+            draco(options.draco || {
+              quantizePosition: 14,
+              quantizeNormal: 10,
+              quantizeTexcoord: 12,
+              quantizeColor: 8,
+              quantizeGeneric: 12,
+            })
+          );
+          break;
+        case 'texturecompress':
+          await document.transform(
+            textureCompress(options.textureCompress || {
+              encoder: 'sharp',  // Use sharp for encoding
+              targetFormat: 'ktx2',
+              slots: /^(baseColor|emissive)$/,  // Compress these texture types
+            })
+          );
+          break;
+        case 'meshopt':
+          await document.transform(
+            meshopt(options.meshopt || {
+              level: 'medium',  // Options: low, medium, high
+            })
+          );
           break;
         default:
           console.warn(`Unknown operation: ${operation}`);

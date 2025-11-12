@@ -226,17 +226,28 @@ class AssetEditForm(forms.ModelForm):
 class GLTFTransformForm(forms.Form):
     """Form for applying glTF-Transform operations to asset files"""
 
-    # Available operations with descriptions
+    # Available operations with descriptions (organized by priority)
     OPERATIONS = [
-        ("dedup", "Remove duplicate vertex or texture data"),
+        # Core optimizations (safe and recommended)
+        ("dedup", "Remove duplicate vertex/texture data"),
         ("prune", "Remove unreferenced properties"),
-        ("quantize", "Quantize geometry to reduce file size"),
         ("weld", "Merge duplicate vertices"),
         ("join", "Join compatible primitives"),
         ("flatten", "Flatten scene graph hierarchy"),
-        ("instance", "Create instances of reused meshes"),
+        ("instance", "Create GPU instances of reused meshes"),
+        # Compression (high impact on file size)
+        ("draco", "🚀 Draco compression (3-20x geometry reduction)"),
+        ("meshopt", "🚀 Meshopt compression (fast decompression)"),
+        ("textureCompress", "🚀 KTX2 texture compression (5-10x reduction)"),
+        # Quality adjustments
+        ("quantize", "Reduce geometry precision"),
+        ("metalrough", "Convert to metallic-roughness PBR"),
+        ("unlit", "Convert materials to unlit"),
+        # Advanced operations
+        ("simplify", "Reduce triangle count (may affect quality)"),
         ("resample", "Resample animation curves"),
-        ("metalrough", "Convert to metallic-roughness workflow"),
+        ("partition", "Split large files into chunks"),
+        ("unweld", "Unweld vertices (reverse of weld)"),
     ]
 
     operations = forms.MultipleChoiceField(

@@ -117,15 +117,14 @@
 
                 <div class="well mt-4">
                     <h5>Transformation Descriptions</h5>
+
+                    <h6 style="color: var(--color-primary); margin-top: 1rem;">Core Optimizations (Safe & Recommended)</h6>
                     <dl>
                         <dt>Dedup</dt>
                         <dd>Removes duplicate vertex or texture data, reducing file size without affecting visual quality.</dd>
 
                         <dt>Prune</dt>
                         <dd>Removes unreferenced properties and orphaned data from the file.</dd>
-
-                        <dt>Quantize</dt>
-                        <dd>Reduces precision of vertex attributes to decrease file size with minimal visual impact.</dd>
 
                         <dt>Weld</dt>
                         <dd>Merges duplicate vertices that share the same position, reducing geometry complexity.</dd>
@@ -138,12 +137,45 @@
 
                         <dt>Instance</dt>
                         <dd>Creates GPU instances for reused meshes, significantly reducing file size and improving performance.</dd>
+                    </dl>
+
+                    <h6 style="color: var(--color-primary); margin-top: 1.5rem;">🚀 Compression (High Impact)</h6>
+                    <dl>
+                        <dt>Draco</dt>
+                        <dd><strong>Google's Draco mesh compression.</strong> Achieves 3-20x compression on geometry data. Industry standard, widely supported by browsers and engines. Best for static meshes.</dd>
+
+                        <dt>Meshopt</dt>
+                        <dd><strong>Meshoptimizer compression.</strong> Alternative to Draco with faster decompression. Good for real-time applications. Newer standard gaining adoption.</dd>
+
+                        <dt>Texture Compress (KTX2)</dt>
+                        <dd><strong>Basis Universal texture compression.</strong> Reduces texture size by 5-10x. Creates GPU-friendly KTX2 format supported by all modern browsers. Essential for textured models.</dd>
+                    </dl>
+
+                    <h6 style="color: var(--color-primary); margin-top: 1.5rem;">Quality Adjustments</h6>
+                    <dl>
+                        <dt>Quantize</dt>
+                        <dd>Reduces precision of vertex attributes to decrease file size with minimal visual impact. Alternative to Draco if broader compatibility is needed.</dd>
+
+                        <dt>Metal-Rough</dt>
+                        <dd>Converts materials to the metallic-roughness PBR workflow if they use a different workflow.</dd>
+
+                        <dt>Unlit</dt>
+                        <dd>Converts materials to unlit (no lighting calculations). Useful for pre-baked lighting or stylized models.</dd>
+                    </dl>
+
+                    <h6 style="color: var(--color-primary); margin-top: 1.5rem;">Advanced Operations</h6>
+                    <dl>
+                        <dt>Simplify</dt>
+                        <dd>Reduces triangle count using mesh decimation. <strong>May affect visual quality.</strong> Useful for creating LODs (levels of detail).</dd>
 
                         <dt>Resample</dt>
                         <dd>Resamples animation curves to a consistent framerate, potentially reducing animation data size.</dd>
 
-                        <dt>Metal-Rough</dt>
-                        <dd>Converts materials to the metallic-roughness PBR workflow if they use a different workflow.</dd>
+                        <dt>Partition</dt>
+                        <dd>Splits large binary data into separate .bin files. Useful for streaming or partial loading.</dd>
+
+                        <dt>Unweld</dt>
+                        <dd>Opposite of weld - splits shared vertices. Used when smooth shading is not desired or for specific workflows.</dd>
                     </dl>
                 </div>
 

@@ -26,6 +26,7 @@ GLTF_TRANSFORM_SCRIPT = os.path.join(
 
 # Available transformation operations
 AVAILABLE_OPERATIONS = [
+    # Phase 1: Core optimizations (already implemented)
     "dedup",
     "prune",
     "resample",
@@ -34,11 +35,16 @@ AVAILABLE_OPERATIONS = [
     "flatten",
     "join",
     "instance",
+    "metalrough",
+    # Phase 1: Additional operations (now exposed in UI)
     "partition",
     "unweld",
     "simplify",
-    "metalrough",
     "unlit",
+    # Phase 2: Compression (high priority)
+    "draco",
+    "textureCompress",
+    "meshopt",
 ]
 
 
