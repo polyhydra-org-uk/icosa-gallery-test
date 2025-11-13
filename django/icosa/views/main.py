@@ -766,16 +766,31 @@ def asset_gltf_transform(request, asset_url):
                     format_types=format_types,
                 )
 
-                # Check results
+                # Check results and provide detailed feedback
                 all_success = all(result.get("success", False) for result in results.values())
                 if all_success:
-                    messages.success(request, "GLTF transformation completed successfully!")
+                    # Show detailed success message with file size reductions
+                    success_details = []
+                    for fmt, result in results.items():
+                        if result.get("reduction_percent"):
+                            success_details.append(
+                                f"{fmt}: {result['reduction_percent']:.1f}% reduction "
+                                f"({result['input_size']/1024:.1f}KB → {result['output_size']/1024:.1f}KB)"
+                            )
+
+                    if success_details:
+                        messages.success(
+                            request,
+                            f"GLTF transformation completed! {' | '.join(success_details)}"
+                        )
+                    else:
+                        messages.success(request, "GLTF transformation completed successfully!")
                 else:
-                    failed_formats = [fmt for fmt, result in results.items() if not result.get("success", False)]
-                    messages.error(
-                        request,
-                        f"GLTF transformation failed for: {', '.join(failed_formats)}"
-                    )
+                    # Show detailed error messages
+                    for fmt, result in results.items():
+                        if not result.get("success", False):
+                            error_msg = result.get("message", "Unknown error")
+                            messages.error(request, f"{fmt}: {error_msg}")
 
             return HttpResponseRedirect(reverse("icosa:asset_edit", kwargs={"asset_url": asset.url}))
         else:

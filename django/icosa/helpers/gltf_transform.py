@@ -6,6 +6,7 @@ to asset files using the @gltf-transform npm package.
 """
 
 import json
+import logging
 import os
 import subprocess
 import tempfile
@@ -15,6 +16,8 @@ from typing import Dict, List, Optional
 from django.conf import settings
 from django.core.files import File
 from icosa.models import Asset, Format, Resource
+
+logger = logging.getLogger(__name__)
 
 
 # Path to the gltf_transform.js script - it's in the Django project root (django/)
@@ -175,37 +178,65 @@ def transform_asset_formats(
             continue
 
         try:
+            logger.info(f"Starting transformation for {fmt.format_type} (resource_id={resource.id})")
+
             # Create temporary directory for processing
             with tempfile.TemporaryDirectory() as temp_dir:
                 # Copy input file to temp location
                 input_path = os.path.join(temp_dir, "input.glb")
-                with open(input_path, "wb") as f:
-                    resource.file.seek(0)
-                    f.write(resource.file.read())
+                logger.debug(f"Copying file from storage to {input_path}")
+
+                # Open and read the file from storage (works with S3, local, etc.)
+                with resource.file.open('rb') as source_file:
+                    with open(input_path, "wb") as dest_file:
+                        dest_file.write(source_file.read())
+
+                input_size = os.path.getsize(input_path)
+                logger.info(f"Input file size: {input_size} bytes")
 
                 # Set output path
                 output_path = os.path.join(temp_dir, "output.glb")
 
                 # Transform the file
+                logger.info(f"Running transformations: {operations}")
                 result = transform_gltf_file(
                     input_path, output_path, operations, options
                 )
 
                 if result["success"]:
+                    # Get the original filename (just the basename, not full path)
+                    original_name = os.path.basename(resource.file.name)
+                    logger.info(f"Transformation successful, saving back as {original_name}")
+
+                    # Delete the old file from storage
+                    old_path = resource.file.name
+                    resource.file.delete(save=False)
+                    logger.debug(f"Deleted old file: {old_path}")
+
                     # Save the transformed file back to the resource
                     with open(output_path, "rb") as f:
                         resource.file.save(
-                            resource.file.name,
+                            original_name,
                             File(f),
                             save=True,
                         )
 
+                    logger.info(f"Saved transformed file to: {resource.file.name}")
+
+                    # Add file size info to result
+                    result["original_name"] = original_name
+                    result["new_file_path"] = resource.file.name
+                else:
+                    logger.error(f"Transformation failed: {result.get('message')}")
+
                 results[fmt.format_type] = result
 
         except Exception as e:
+            logger.exception(f"Exception during transformation for {fmt.format_type}")
             results[fmt.format_type] = {
                 "success": False,
                 "message": str(e),
+                "error_type": type(e).__name__,
             }
 
     return results
