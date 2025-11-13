@@ -7,6 +7,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const sharp = require('sharp');
 const { NodeIO } = require('@gltf-transform/core');
 const {
   dedup,
@@ -157,7 +158,7 @@ async function transformGLTF() {
         case 'texturecompress':
           await document.transform(
             textureCompress(options.textureCompress || {
-              encoder: 'sharp',  // Use sharp for encoding
+              encoder: sharp,  // Use sharp for encoding
               targetFormat: 'ktx2',
               slots: /^(baseColor|emissive)$/,  // Compress these texture types
             })
