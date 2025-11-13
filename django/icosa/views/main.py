@@ -759,12 +759,24 @@ def asset_gltf_transform(request, asset_url):
                 )
             else:
                 # If task queue is disabled, perform transformation synchronously
-                from icosa.helpers.gltf_transform import transform_asset_formats
-                results = transform_asset_formats(
-                    asset=asset,
-                    operations=operations,
-                    format_types=format_types,
-                )
+                try:
+                    from icosa.helpers.gltf_transform import transform_asset_formats
+                    results = transform_asset_formats(
+                        asset=asset,
+                        operations=operations,
+                        format_types=format_types,
+                    )
+                except Exception as e:
+                    messages.error(request, f"Transformation error: {type(e).__name__}: {str(e)}")
+                    if settings.DEBUG:
+                        import traceback
+                        print(traceback.format_exc())
+                    return HttpResponseRedirect(reverse("icosa:asset_edit", kwargs={"asset_url": asset.url}))
+
+                # Check if any formats were processed
+                if not results:
+                    messages.error(request, "No GLTF formats found to transform. Selected types may not exist for this asset.")
+                    return HttpResponseRedirect(reverse("icosa:asset_edit", kwargs={"asset_url": asset.url}))
 
                 # Check results and provide detailed feedback
                 all_success = all(result.get("success", False) for result in results.values())
