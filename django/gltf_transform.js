@@ -29,6 +29,16 @@ const {
 } = require('@gltf-transform/functions');
 const { ALL_EXTENSIONS } = require('@gltf-transform/extensions');
 
+// Check for optional dependencies
+let meshoptimizerAvailable = false;
+try {
+  require('meshoptimizer');
+  meshoptimizerAvailable = true;
+  console.log('meshoptimizer: available');
+} catch (e) {
+  console.warn('meshoptimizer: not available - simplify operation will fail');
+}
+
 // Parse command line arguments
 const args = process.argv.slice(2);
 
@@ -131,6 +141,11 @@ async function transformGLTF() {
           await document.transform(unweld(options.unweld || {}));
           break;
         case 'simplify':
+          if (!meshoptimizerAvailable) {
+            console.error('ERROR: simplify operation requires meshoptimizer package');
+            console.error('Run: npm install meshoptimizer');
+            throw new Error('meshoptimizer not installed - simplify operation unavailable');
+          }
           if (!options.simplify || !options.simplify.ratio) {
             console.warn('Simplify requires a ratio option (0-1). Using default 0.5');
           }
