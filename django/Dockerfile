@@ -18,16 +18,15 @@ RUN set -x            \
     git               \
     libmagic-dev      \
     libpq-dev         \
-    # nodejs          \
-    # npm             \
+    nodejs            \
+    npm               \
     "                 \
     && apt-get update \
     && apt-get install -y --no-install-recommends $BUILD_DEPS
 
 # npm packages setup
-# Disabled until we need to use the gltf converter
-# COPY package.json .
-# RUN npm install
+COPY package.json .
+RUN npm install
 
 # Virtualenv setup
 RUN python -m venv /venv
@@ -52,7 +51,7 @@ RUN set -x            \
     libmagic-dev      \
     htop              \
     libssl-dev        \
-    # nodejs          \
+    nodejs            \
     "                 \
     && apt-get update \
     && apt-get install -y --no-install-recommends $BUILD_DEPS
@@ -61,8 +60,7 @@ WORKDIR /opt
 EXPOSE 8001
 
 COPY --from=builder /venv /venv
-# Disabled until we need to use the gltf converter
-# COPY --from=builder /opt/node_modules /node_modules
+COPY --from=builder /opt/node_modules /node_modules
 COPY . .
 
 RUN mkdir -p /opt/logs
